@@ -1,0 +1,2069 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#15112b">
+<title>Merge Munchies — Rainbow RNG Kitchen</title>
+<style>
+:root{
+  --bg:#101321;--panel:#191e31;--panel2:#202740;--panel3:#262e49;--line:#343d5c;
+  --text:#f7f7ff;--muted:#a6afca;--pink:#ff709d;--gold:#ffd166;--mint:#68f0c2;
+  --blue:#85a7ff;--purple:#be8aff;--shadow:0 18px 50px #05071065;
+}
+*{box-sizing:border-box}
+html{background:var(--bg);color-scheme:dark}
+body{margin:0;min-height:100vh;color:var(--text);font-family:Inter,ui-rounded,"Segoe UI",system-ui,-apple-system,sans-serif;
+background:radial-gradient(ellipse at 50% -12%,#34416d 0%,#1a2035 39%,#0c101b 100%);background-attachment:fixed}
+button{font:inherit;cursor:pointer;border:0;color:inherit;transition:transform .13s ease,filter .13s ease,background .13s ease}
+button:hover{filter:brightness(1.08)}button:active{transform:scale(.97)}button:focus-visible{outline:2px solid var(--mint);outline-offset:3px}
+button:disabled{opacity:.42;cursor:not-allowed;filter:grayscale(.3);transform:none}
+.topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:13px clamp(14px,3vw,38px);
+background:#111525eF;border-bottom:1px solid #ffffff12;backdrop-filter:blur(18px)}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.logo{width:44px;height:44px;display:grid;place-items:center;border-radius:15px;font-size:25px;background:linear-gradient(135deg,#ff729f,#a879ff);box-shadow:0 7px 22px #ff709d35;flex:none}
+.brand h1{font-size:19px;line-height:1.05;margin:0;font-weight:900;letter-spacing:-.5px}
+.brand small{display:block;color:var(--muted);font-size:11px;letter-spacing:1.3px;text-transform:uppercase;margin-top:5px;font-weight:800}
+.top-actions{display:flex;align-items:center;gap:9px}
+.pill{display:flex;align-items:center;gap:7px;padding:9px 13px;border:1px solid #ffffff13;border-radius:999px;background:#ffffff08;font-weight:800;white-space:nowrap}
+.coins{color:#ffe18a;background:#ffcf4d12;border-color:#ffcf4d28}
+.save-state{font-size:12px;color:var(--mint);font-weight:750;white-space:nowrap}
+.icon-btn{width:38px;height:38px;border:1px solid var(--line);border-radius:12px;background:#ffffff08;display:grid;place-items:center;font-size:17px}
+.page{max-width:1440px;margin:auto;padding:24px clamp(12px,2.6vw,34px) 40px}
+.hero{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:20px}
+.eyebrow{color:var(--mint);text-transform:uppercase;font-size:11px;letter-spacing:2px;font-weight:900;margin-bottom:8px}
+.hero h2{font-size:clamp(25px,3.4vw,39px);letter-spacing:-1.3px;line-height:1.05;margin:0}
+.hero p{color:var(--muted);margin:9px 0 0;font-size:14px;max-width:620px;line-height:1.5}
+.hero-badges{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px}
+.tag{font-size:11px;letter-spacing:.35px;font-weight:900;border-radius:999px;border:1px solid #ffffff16;padding:7px 10px;background:#ffffff08;color:#cbd2ec;white-space:nowrap}
+.tag.pink{color:#ffa1be;border-color:#ff729f45;background:#ff729f12}.tag.mint{color:var(--mint);border-color:#68f0c244;background:#68f0c20e}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:18px;align-items:start}
+.panel{background:linear-gradient(155deg,#1c2237f5,#171c2def);border:1px solid #ffffff12;border-radius:23px;box-shadow:var(--shadow);overflow:hidden}
+.panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:17px 19px;border-bottom:1px solid #ffffff0d}
+.panel-title{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:900}
+.panel-title .emoji{display:grid;place-items:center;width:32px;height:32px;border-radius:11px;background:#ffffff0c;font-size:17px}
+.subline{color:var(--muted);font-size:11px;font-weight:650;margin-top:3px}
+.board-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:12px;padding:10px 13px;font-size:12px;font-weight:900;letter-spacing:.1px}
+.btn.primary{background:linear-gradient(135deg,#ff719e,#f15487);box-shadow:0 7px 18px #ff719e24;color:#fff}
+.btn.secondary{background:#ffffff0b;border:1px solid #ffffff16;color:#e4e8fb}
+.btn.mint{background:linear-gradient(135deg,#72f1c2,#44dcb0);color:#09251e;box-shadow:0 7px 18px #68f0c21c}
+.btn.gold{background:linear-gradient(135deg,#ffdb78,#ffbb4e);color:#35220b}
+.btn.small{padding:8px 10px;border-radius:10px;font-size:11px}
+.board-wrap{padding:14px}
+.board{height:clamp(400px,53vw,625px);min-height:370px;position:relative;overflow:hidden;border-radius:17px;border:1px solid #7987b326;
+background:
+ radial-gradient(ellipse at 20% 15%,#4a5d8d29,transparent 28%),
+ radial-gradient(ellipse at 85% 80%,#9c5b9a20,transparent 30%),
+ linear-gradient(140deg,#1c2742,#171d32 65%,#20233c);
+touch-action:pan-y;user-select:none}
+.board:before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.23;background-image:radial-gradient(#a6b7ee 1px,transparent 1px);background-size:24px 24px}
+.board:after{content:"";position:absolute;inset:0;border-radius:17px;pointer-events:none;box-shadow:inset 0 0 80px #080b18a8}
+.board-hint{position:absolute;bottom:13px;left:14px;z-index:2;color:#b6c0df9c;font-size:10px;font-weight:800;letter-spacing:.7px;pointer-events:none}
+.food{position:absolute;z-index:4;width:86px;height:91px;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+border-radius:19px;border:1px solid #ffffff30;background:linear-gradient(155deg,#343e5d,#222941);box-shadow:0 9px 15px #04061172,inset 0 1px #ffffff19;touch-action:none;user-select:none}
+.food:hover{z-index:7;filter:brightness(1.13);transform:translate(-50%,-50%) scale(1.035)}
+.food.selected{outline:3px solid var(--mint);outline-offset:2px;box-shadow:0 0 0 7px #68f0c220,0 9px 22px #04061190}
+.food .food-emoji{font-size:36px;line-height:1.1;filter:drop-shadow(0 4px 3px #0005);pointer-events:none}
+.food .food-name{max-width:78px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:9px;font-weight:900;color:#eff2ff;pointer-events:none}
+.food .tier-label{position:absolute;right:5px;top:5px;font-size:8px;font-weight:950;color:#d8e1ff9e;pointer-events:none}
+.food .mutation-label{position:absolute;left:5px;top:5px;font-size:8px;font-weight:950;letter-spacing:.2px;pointer-events:none}
+.food.shiny{border-color:#8de6ff9c;background:linear-gradient(150deg,#3e6479,#27334b);box-shadow:0 0 18px #7ce8ff23,0 9px 15px #04061172}
+.food.golden{border-color:#ffdb70;background:linear-gradient(150deg,#896a36,#4d3e2a);box-shadow:0 0 21px #ffd16630,0 9px 15px #04061172}
+.food.rainbow{border-color:#ff9bef;background:linear-gradient(140deg,#c86d9a,#7569c8,#53bdb2);box-shadow:0 0 25px #d8a5ff55,0 9px 15px #04061172;animation:rainbowGlow 2.8s linear infinite}
+.food.cosmic{border-color:#d5b4ff;background:linear-gradient(145deg,#4c357a,#283f70);box-shadow:0 0 30px #ad70ff77,0 9px 15px #04061172;animation:cosmicGlow 2s ease-in-out infinite alternate}
+@keyframes rainbowGlow{0%,100%{filter:hue-rotate(0deg)}50%{filter:hue-rotate(60deg)}}
+@keyframes cosmicGlow{from{box-shadow:0 0 14px #ad70ff55,0 9px 15px #04061172}to{box-shadow:0 0 32px #65e8ff99,0 9px 15px #04061172}}
+.board-toolbar{padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;border-top:1px solid #ffffff0d}
+.selected-info{min-width:0;display:flex;align-items:center;gap:10px;color:var(--muted);font-size:12px}
+.selected-preview{width:38px;height:38px;display:grid;place-items:center;font-size:24px;border-radius:12px;background:#ffffff0b;flex:none}
+.selected-info strong{color:var(--text);display:block;margin-bottom:3px;font-size:12px}
+.mini-actions{display:flex;gap:7px;flex-wrap:wrap}
+.sidebar{display:flex;flex-direction:column;gap:16px}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:14px}
+.stat{padding:13px 12px;border:1px solid #ffffff0c;background:#ffffff05;border-radius:14px;min-width:0}
+.stat .label{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);font-weight:850}
+.stat .value{font-size:22px;font-weight:950;letter-spacing:-.6px;margin-top:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stat .foot{font-size:10px;color:#7f8cac;margin-top:2px}
+.upgrades{padding:13px;display:flex;flex-direction:column;gap:9px}
+.upgrade{display:flex;align-items:center;gap:11px;padding:11px;border-radius:15px;border:1px solid #ffffff11;background:#ffffff04}
+.upgrade-icon{width:42px;height:42px;display:grid;place-items:center;font-size:22px;border-radius:13px;flex:none;background:linear-gradient(145deg,#323c5b,#252d45)}
+.upgrade-info{flex:1;min-width:0}
+.upgrade-info strong{font-size:12px;display:block}
+.upgrade-info p{margin:4px 0 0;font-size:10px;line-height:1.35;color:var(--muted)}
+.level{font-size:9px;color:var(--mint);font-weight:900;margin-top:5px}
+.upgrade-buy{padding:8px 9px;border-radius:10px;background:#ffcf571a;color:#ffe199;border:1px solid #ffcf572e;font-weight:950;font-size:10px;white-space:nowrap}
+.upgrade-buy.max{color:var(--mint);background:#68f0c20d;border-color:#68f0c21e}
+.index-preview{padding:14px}
+.progress-row{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:11px;color:var(--muted);font-weight:750;margin-bottom:8px}
+.progress-track{height:7px;border-radius:999px;background:#ffffff0d;overflow:hidden}
+.progress-fill{height:100%;width:0;background:linear-gradient(90deg,var(--mint),#86a5ff);border-radius:999px;transition:width .35s}
+.preview-items{display:flex;gap:7px;margin-top:13px;flex-wrap:wrap}
+.preview-food{width:38px;height:38px;display:grid;place-items:center;border-radius:12px;font-size:21px;border:1px solid #ffffff12;background:#ffffff08;position:relative}
+.preview-food.locked{filter:grayscale(1);opacity:.25}
+.mission-list{padding:12px;display:flex;flex-direction:column;gap:9px}
+.mission{border-radius:13px;background:#ffffff05;border:1px solid #ffffff0b;padding:11px}
+.mission-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.mission-title{font-size:11px;font-weight:850}
+.mission-reward{font-size:10px;color:#ffdc81;font-weight:900;white-space:nowrap}
+.mission-desc{font-size:10px;color:var(--muted);margin-top:4px}
+.mission-progress{margin-top:9px;display:flex;align-items:center;gap:8px}
+.mission-progress .progress-track{flex:1;height:5px}
+.mission-progress span{font-size:9px;color:#98a3c2;font-weight:800;white-space:nowrap}
+.mission-claim{padding:7px 9px;background:#68f0c21b;border:1px solid #68f0c237;border-radius:9px;color:var(--mint);font-size:10px;font-weight:950}
+.footer-note{color:#8490b0;font-size:10px;text-align:center;line-height:1.6;margin:16px auto 0;max-width:700px}
+.toast-stack{position:fixed;z-index:90;top:75px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;width:min(92vw,440px)}
+.toast{padding:11px 16px;border:1px solid #ffffff1e;border-radius:13px;background:#232b43f2;box-shadow:0 10px 35px #0005;font-size:12px;font-weight:850;text-align:center;animation:toastIn .25s ease both}
+.toast.good{border-color:#68f0c25c;color:#91ffda}.toast.gold{border-color:#ffd16665;color:#ffe29b}.toast.bad{border-color:#ff709d55;color:#ffabc3}
+@keyframes toastIn{from{opacity:0;transform:translateY(-10px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+.float-text{position:absolute;z-index:16;pointer-events:none;font-size:14px;font-weight:1000;text-shadow:0 2px 6px #000;animation:floatUp .9s ease-out forwards;white-space:nowrap}
+@keyframes floatUp{to{opacity:0;transform:translateY(-53px) scale(1.08)}}
+.particle{position:absolute;z-index:15;width:8px;height:8px;border-radius:3px;pointer-events:none;animation:particleFly .65s ease-out forwards}
+@keyframes particleFly{to{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(240deg) scale(.2)}}
+.modal-backdrop{position:fixed;z-index:70;inset:0;background:#070a13c9;backdrop-filter:blur(9px);display:none;align-items:center;justify-content:center;padding:16px}
+.modal-backdrop.open{display:flex}
+.modal{width:min(760px,100%);max-height:min(86vh,850px);display:flex;flex-direction:column;border-radius:22px;border:1px solid #ffffff1c;background:linear-gradient(150deg,#202741,#141a2a);box-shadow:0 35px 120px #0009;overflow:hidden;animation:modalIn .18s ease}
+@keyframes modalIn{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}
+.modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:17px 20px;border-bottom:1px solid #ffffff12}
+.modal-head h3{margin:0;font-size:17px}.modal-head p{margin:4px 0 0;color:var(--muted);font-size:11px}
+.modal-body{padding:17px 20px;overflow:auto}
+.index-tools{display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:9px;margin-top:14px;}
+.index-tools input,.index-tools select{width:100%;min-width:0;padding:10px 12px;border:1px solid #ffffff1a;border-radius:11px;background:#111729;color:var(--text);font:inherit;font-size:11px;outline:none;}
+.index-tools input:focus,.index-tools select:focus{border-color:#68f0c277;box-shadow:0 0 0 3px #68f0c215}
+.index-card[hidden]{display:none!important}
+@media(max-width:560px){.index-tools{grid-template-columns:1fr}.index-tools select{min-height:38px}}
+.index-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:9px}
+.index-card{position:relative;min-height:113px;border:1px solid #ffffff13;background:#ffffff05;border-radius:15px;padding:13px 10px;text-align:center}
+.index-card.found{background:#ffffff08;border-color:#ffffff22}.index-card .idx-emoji{font-size:29px;display:block;margin-bottom:7px;filter:drop-shadow(0 4px 3px #0004)}
+.index-card .idx-name{font-size:10px;font-weight:900;display:block}.index-card .idx-sub{font-size:9px;color:var(--muted);margin-top:4px;display:block}
+.index-card.locked .idx-emoji{filter:grayscale(1);opacity:.15}.index-card.locked .idx-name{color:#78819d}
+.index-card .found-check{position:absolute;right:8px;top:7px;font-size:10px;color:var(--mint)}
+.modal-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;margin-top:15px}
+.settings-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 0;border-bottom:1px solid #ffffff0b}
+.settings-row:last-child{border-bottom:0}.settings-row strong{font-size:12px}.settings-row p{font-size:10px;color:var(--muted);margin:4px 0 0}
+.muted{color:var(--muted)}.danger{color:#ff9bb7!important}
+
+/* Clean, compact dashboard layout */
+html,body{height:100%;}
+body{overflow:hidden;}
+.topbar{height:66px;padding-top:9px;padding-bottom:9px;animation:topbarDrop .55s cubic-bezier(.2,.8,.2,1) both}
+.page{height:calc(100dvh - 66px);max-width:1600px;padding-top:15px;padding-bottom:12px;display:flex;flex-direction:column;overflow:hidden}
+.hero{align-items:center;margin-bottom:13px;gap:12px;flex:none}
+.hero h2{font-size:clamp(25px,2.8vw,34px)}
+.hero p{font-size:12px;margin-top:6px;max-width:650px}
+.eyebrow{margin-bottom:5px;font-size:10px}
+.hero-badges{gap:6px}.tag{padding:6px 9px;font-size:10px}
+.layout{flex:1;min-height:0;grid-template-columns:minmax(0,1fr) minmax(275px,315px);gap:14px;align-items:stretch}
+.game-panel{min-height:0;display:flex;flex-direction:column;animation:panelRise .55s .08s both}
+.game-panel .panel-head{padding:12px 16px;flex:none}
+.board-wrap{padding:10px;flex:1;min-height:0;display:flex}
+.board{height:auto;min-height:0;flex:1;isolation:isolate;background-size:100% 100%,100% 100%,220% 220%}
+.board:before{background-size:26px 26px}
+.board-toolbar{padding:10px 14px;flex:none}
+.sidebar{min-height:0;gap:10px;display:flex;flex-direction:column;animation:panelRise .6s .16s both}
+.sidebar .panel{flex:none}
+.stats-panel .panel-head{padding:12px 14px}
+.stats-grid{padding:10px;gap:7px}
+.stat{padding:10px}
+.stat .value{font-size:20px;margin-top:4px}
+.stat .foot{font-size:9px}
+.side-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;padding:5px;border:1px solid #ffffff12;border-radius:15px;background:#101626;flex:none}
+.side-tab{padding:10px 5px;border-radius:10px;background:transparent;color:#aeb9d7;font-size:10px;font-weight:900;white-space:nowrap;transition:background .2s,color .2s,transform .2s;}
+.side-tab.active{color:#fff;background:linear-gradient(135deg,#3b4668,#29324e);box-shadow:inset 0 0 0 1px #ffffff13,0 5px 14px #05071155}
+.tab-panel{display:none;min-height:0;overflow:hidden;animation:tabIn .28s ease both}
+.tab-panel.active{display:flex;flex-direction:column;flex:1;min-height:0}
+.tab-panel .panel-head{padding:12px 14px;flex:none}
+.tab-panel .upgrades,.tab-panel .index-preview,.tab-panel .mission-list{overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#455273 transparent}
+.upgrades{padding:9px;gap:7px}
+.upgrade{padding:9px;gap:8px;transition:transform .2s,border-color .2s,background .2s}
+.upgrade:hover{transform:translateY(-2px);border-color:#8b9cff40;background:#ffffff08}
+.upgrade-icon{width:36px;height:36px;font-size:20px;border-radius:11px}
+.upgrade-info p{font-size:9px}
+.upgrade-buy{padding:7px 8px}
+.shop-list{padding:9px;display:flex;flex:1;min-height:0;flex-direction:column;gap:8px;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#455273 transparent}
+.shop-card{position:relative;display:grid;flex:0 0 auto;min-height:82px;grid-template-columns:44px minmax(0,1fr) auto;align-items:center;gap:10px;padding:11px;border-radius:15px;border:1px solid #ffffff13;background:linear-gradient(110deg,#ffffff08,#ffffff03);transition:transform .2s,border-color .2s,box-shadow .2s,background .2s;overflow:hidden}
+.shop-card:before{content:"";position:absolute;inset:0 auto 0 -70%;width:45%;background:linear-gradient(90deg,transparent,#ffffff12,transparent);transform:skewX(-18deg);transition:left .5s;pointer-events:none}
+.shop-card:hover{transform:translateY(-2px);border-color:#b68aff55;box-shadow:0 8px 24px #05071135;background:#ffffff09}
+.shop-card:hover:before{left:130%}
+.shop-icon{height:44px;width:44px;display:grid;place-items:center;border-radius:13px;background:linear-gradient(145deg,#3d456a,#272d48);font-size:25px;box-shadow:inset 0 1px #ffffff22}
+.shop-card strong{display:block;font-size:11px}.shop-card p{margin:4px 0 5px;color:var(--muted);font-size:9px;line-height:1.35}.shop-rarity{font-size:8px;font-weight:900;color:#c3a6ff;letter-spacing:.6px;text-transform:uppercase}
+.shop-buy{position:relative;z-index:1;border-radius:10px;padding:9px 10px;white-space:nowrap;font-size:10px;font-weight:950;color:#251a35;background:linear-gradient(135deg,#d3a3ff,#a981ff);box-shadow:0 5px 14px #a981ff24;transition:transform .18s,filter .18s,box-shadow .18s}
+.shop-buy:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 20px #a981ff40}.shop-buy:disabled{opacity:.4;filter:grayscale(.5)}
+.shop-banner{margin:10px 10px 0;padding:10px 12px;border:1px solid #be8aff28;border-radius:13px;background:linear-gradient(110deg,#be8aff0e,#68f0c20a);font-size:10px;color:#c8d0ed;line-height:1.5}
+.shop-reveal{animation:shopReveal .42s cubic-bezier(.2,.8,.2,1) both}
+@keyframes shopReveal{0%{opacity:0;transform:translateY(8px) scale(.96);filter:brightness(1.8)}70%{opacity:1;transform:translateY(-2px) scale(1.02)}100%{opacity:1;transform:none;filter:none}}
+.shop-buy.purchased{animation:buyFlash .45s ease}
+@keyframes buyFlash{0%{box-shadow:0 0 0 0 #68f0c200}45%{box-shadow:0 0 0 7px #68f0c229}100%{box-shadow:0 0 0 0 #68f0c200}}
+.index-preview{padding:12px}
+.mission-list{padding:9px;gap:7px}
+.mission{padding:9px}
+.footer-note{display:none}
+.btn{transition:transform .18s cubic-bezier(.2,.8,.2,1),box-shadow .18s,filter .18s}
+.btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 20px #0003}
+.btn.primary:hover:not(:disabled){box-shadow:0 0 0 1px #ff9cba55,0 8px 24px #ff709d40}
+.logo{animation:logoFloat 3.6s ease-in-out infinite;position:relative}
+.logo:after{content:"";position:absolute;inset:-4px;border:1px solid #ff8db74d;border-radius:18px;animation:logoRing 2.8s ease-out infinite}
+.food{animation:none!important;transition:filter .18s,box-shadow .2s,outline-color .18s}
+.food .food-emoji{animation:none!important;transform-origin:50% 80%}
+.food:hover .food-emoji{transform:none}
+.food.selected{animation:none!important;outline-color:var(--mint);box-shadow:0 0 0 5px #68f0c21c,0 9px 22px #04061190}
+.food.spawn-pop{animation:none!important;z-index:9}
+.particle{border-radius:50%;box-shadow:0 0 10px currentColor}
+.toast{animation:toastIn .3s cubic-bezier(.16,1,.3,1) both}
+ .panel{transition:border-color .25s,box-shadow .25s}
+.stat{transition:background .2s,border-color .2s,transform .2s}
+.stat:hover{background:#ffffff09;border-color:#8c9bcf2b;transform:translateY(-1px)}
+.side-tab{transition:background .22s,color .22s,transform .18s,box-shadow .22s}
+.side-tab:hover{transform:translateY(-1px);color:#fff}
+.index-card,.mission{transition:transform .2s,border-color .2s,background .2s,box-shadow .2s}
+.index-card:hover,.mission:hover{transform:translateY(-2px);border-color:#9daeff36;background:#ffffff09;box-shadow:0 7px 20px #05071126}
+.preview-food{transition:transform .2s,background .2s,border-color .2s}
+.preview-food:hover{transform:translateY(-2px) scale(1.04);border-color:#68f0c24a}
+.panel-title .emoji{transition:transform .25s,background .25s}
+.panel-head:hover .panel-title .emoji{transform:rotate(-4deg) scale(1.04);background:#ffffff12}
+.pill{transition:background .2s,border-color .2s}
+.pill:hover{background:#ffffff0d;border-color:#ffffff25}
+@keyframes topbarDrop{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes panelRise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes tabIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+@keyframes logoFloat{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-3px) rotate(3deg)}}
+@keyframes logoRing{0%{transform:scale(.9);opacity:.65}100%{transform:scale(1.25);opacity:0}}
+@media(min-width:791px) and (max-height:760px){.page{padding-top:9px}.hero{margin-bottom:8px}.hero h2{font-size:25px}.hero p{display:none}.hero-badges .tag{padding:5px 7px}.board-actions .btn{padding:8px 9px}.panel-head{padding-top:9px!important;padding-bottom:9px!important}.stats-grid{padding:7px}.stat{padding:8px}.side-tab{padding:8px 4px}.upgrades{padding:6px}.upgrade{padding:7px}}
+
+@media(max-width:1000px){.layout{grid-template-columns:minmax(0,1fr) 285px}.food{width:78px;height:83px}.food .food-emoji{font-size:32px}}
+@media(max-width:790px){.hero{align-items:flex-start;flex-direction:column}.hero-badges{justify-content:flex-start}.layout{grid-template-columns:1fr}.sidebar{display:grid;grid-template-columns:1fr 1fr;align-items:start}.sidebar .panel:first-child{grid-row:span 1}.board{height:530px}}
+@media(max-width:560px){.topbar{padding:10px 12px}.brand h1{font-size:16px}.brand small{font-size:9px}.logo{width:39px;height:39px}.save-state{display:none}.top-actions{gap:6px}.pill{padding:8px 10px;font-size:11px}.page{padding:18px 10px 28px}.hero{margin-bottom:15px}.hero h2{font-size:29px}.hero p{font-size:12px}.panel{border-radius:18px}.panel-head{padding:13px}.board-wrap{padding:9px}.board{height:440px;min-height:380px}.food{width:66px;height:72px;border-radius:15px}.food .food-emoji{font-size:28px}.food .food-name{font-size:8px;max-width:60px}.food .tier-label{font-size:7px}.food .mutation-label{font-size:7px}.board-actions .btn{padding:9px 10px;font-size:10px}.board-toolbar{padding:12px;align-items:flex-start}.selected-info{max-width:100%}.sidebar{display:flex}.stats-grid{padding:11px}.stat .value{font-size:20px}.upgrade{padding:10px}.index-grid{grid-template-columns:repeat(auto-fill,minmax(100px,1fr))}.modal-body{padding:14px}.modal-head{padding:14px}}
+@media(max-width:790px){
+  html,body{height:auto;min-height:100%;}body{overflow:auto}
+  .page{height:auto;min-height:calc(100dvh - 60px);overflow:visible;padding:16px 12px 24px}
+  .layout{flex:none;grid-template-columns:1fr;align-items:start}
+  .game-panel{min-height:620px}.board-wrap{flex:none}.board{height:clamp(360px,58vh,540px);min-height:360px}
+  .sidebar{display:flex}.tab-panel.active{flex:none;max-height:none}.tab-panel .upgrades,.tab-panel .index-preview,.tab-panel .mission-list{overflow:visible}
+  .footer-note{display:block;margin-bottom:10px}
+}
+@media(max-width:560px){
+  .hero{gap:8px}.hero-badges{display:none}.hero p{display:none}.hero h2{font-size:26px}
+  .game-panel{min-height:0}.board-wrap{padding:8px}.board{height:clamp(350px,56vh,460px);min-height:350px}
+  .side-tab{font-size:9px;padding:9px 2px}.tab-panel.active{display:flex}
+}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
+/* Ten new game sections + special reward moments (merge animations intentionally unchanged) */
+.side-tabs{grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;padding:5px;max-height:174px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#455273 transparent}
+.side-tab{min-width:0;min-height:29px;white-space:normal;line-height:1.1;font-size:9px;padding:6px 2px;border:1px solid transparent}
+.side-tab.active{border-color:#a8b6ff22;box-shadow:inset 0 0 0 1px #ffffff0a,0 4px 12px #05071155}
+.side-tab:focus-visible{outline-offset:1px}
+.feature-content{padding:12px;flex:1;overflow:auto;min-height:0;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#455273 transparent;display:flex;flex-direction:column;gap:10px}
+.feature-content>*{flex:0 0 auto}
+.feature-hero{position:relative;padding:15px;border:1px solid #ffffff12;border-radius:16px;background:radial-gradient(ellipse at 100% 0%,#a77bff22,transparent 54%),linear-gradient(120deg,#242b46,#1a2138);overflow:hidden}
+.feature-hero:after{content:"";position:absolute;inset:-65% auto -65% -50%;width:32%;transform:rotate(20deg);background:linear-gradient(90deg,transparent,#ffffff0b,transparent);animation:featureSweep 5s ease-in-out infinite;pointer-events:none}
+.feature-hero .feature-icon{font-size:35px;line-height:1.1;filter:drop-shadow(0 5px 12px #ad8aff38)}
+.feature-hero h4{margin:9px 0 4px;font-size:14px;letter-spacing:-.2px}
+.feature-hero p{margin:0;color:var(--muted);font-size:10px;line-height:1.5}
+.feature-row{display:flex;align-items:center;gap:10px;padding:11px;border:1px solid #ffffff12;border-radius:14px;background:#ffffff05;transition:transform .2s,border-color .2s,background .2s}
+.feature-row:hover{transform:translateY(-2px);border-color:#9b9eff42;background:#ffffff08}
+.feature-row .feature-icon{width:40px;height:40px;display:grid;place-items:center;flex:none;border-radius:12px;background:linear-gradient(145deg,#3b4567,#252d47);font-size:22px}
+.feature-copy{flex:1;min-width:0}.feature-copy strong{display:block;font-size:11px}.feature-copy p{font-size:9px;line-height:1.4;color:var(--muted);margin:4px 0 0}
+.feature-tag{display:inline-flex;padding:4px 7px;margin-top:5px;border-radius:7px;background:#ffffff08;color:#bfc9e8;font-size:8px;font-weight:900;letter-spacing:.4px;text-transform:uppercase}
+.feature-button{flex:none;padding:9px 10px;border-radius:10px;background:linear-gradient(135deg,#d2a1ff,#a881ff);color:#21172f;font-size:10px;font-weight:950;box-shadow:0 5px 15px #a981ff1c;transition:transform .18s,box-shadow .18s,filter .18s}
+.feature-button:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 20px #a981ff38}
+.feature-button.green{background:linear-gradient(135deg,#76f1c5,#47dcb0);color:#09251e}
+.feature-button.gold{background:linear-gradient(135deg,#ffe18a,#ffbd52);color:#392407}
+.feature-button:disabled{opacity:.42;cursor:not-allowed;filter:grayscale(.25)}
+.feature-meter{height:7px;border-radius:999px;background:#ffffff0e;overflow:hidden;margin-top:9px}
+.feature-meter span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#6cecc0,#a783ff);transition:width .5s cubic-bezier(.2,.8,.2,1)}
+.feature-number{font-size:24px;font-weight:1000;letter-spacing:-.8px}
+.feature-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.feature-mini{padding:11px;border:1px solid #ffffff12;border-radius:13px;background:#ffffff05}
+.feature-mini span{display:block;font-size:9px;color:var(--muted)}.feature-mini strong{display:block;font-size:16px;margin-top:5px}
+.feature-complete{border-color:#68f0c23f;background:linear-gradient(110deg,#68f0c20d,#ffffff04)}
+.feature-complete .feature-tag{color:var(--mint);background:#68f0c210}
+.feature-locked{opacity:.76}
+.celebration-layer{position:fixed;inset:0;z-index:85;pointer-events:none;overflow:hidden}
+.celebration-layer.flash:before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 45%,#fff7 0%,#fff2 18%,transparent 60%);animation:screenFlash .55s ease-out forwards}
+.celebrate-spark{position:absolute;left:var(--sx);top:var(--sy);font-size:var(--ss);color:var(--sc);opacity:0;filter:drop-shadow(0 0 7px currentColor);animation:specialBurst 1.25s cubic-bezier(.15,.75,.25,1) forwards;animation-delay:var(--sd)}
+@keyframes specialBurst{0%{opacity:0;transform:translate(0,0) rotate(0) scale(.25)}12%{opacity:1}78%{opacity:.95}100%{opacity:0;transform:translate(var(--tx),var(--ty)) rotate(var(--rot)) scale(1.15)}}
+@keyframes screenFlash{0%{opacity:0}22%{opacity:.9}100%{opacity:0}}
+@keyframes featureSweep{0%,70%,100%{left:-50%}85%{left:130%}}
+.feature-hero,.feature-row,.feature-button,.side-tab{will-change:transform}
+.tab-enter-special .panel-head{animation:tabTitleGlow .7s ease-out}
+@keyframes tabTitleGlow{0%{background:#c4a1ff17}100%{background:transparent}}
+@media(max-width:790px){.side-tabs{max-height:none;overflow:visible}.feature-content{overflow:visible;max-height:none}.side-tab{font-size:9px;min-height:32px}}
+@media(prefers-reduced-motion:reduce){.feature-hero:after{animation:none}.celebration-layer.flash:before,.celebrate-spark{animation-duration:.01ms!important}}
+
+
+
+/* Larger top navigation: readable tabs in two rows on desktop. */
+.side-tabs.top-tabs{
+  order:0; flex:none; width:100%; max-height:none; overflow:visible;
+  display:grid; grid-template-columns:repeat(9,minmax(0,1fr)); gap:8px;
+  padding:8px; margin:0 0 13px; border:1px solid #ffffff14; border-radius:19px;
+  background:linear-gradient(135deg,#141a2bdf,#101625ec);
+  box-shadow:0 10px 28px #05071128;
+}
+.side-tabs.top-tabs .side-tab{
+  position:relative; display:flex; flex-direction:row; align-items:center; justify-content:center;
+  gap:9px; min-width:0; min-height:50px; padding:10px 12px; border:1px solid #ffffff0b;
+  border-radius:13px; background:#ffffff04; color:#c4cce5; font-size:12px; line-height:1.1;
+  font-weight:900; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  transition:background .2s,color .2s,border-color .2s,transform .18s,box-shadow .2s;
+}
+.side-tabs.top-tabs .tab-icon{display:inline-grid;place-items:center;flex:none;font-size:20px;line-height:1;filter:drop-shadow(0 2px 5px #0003)}
+.side-tabs.top-tabs .tab-label{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.side-tabs.top-tabs .side-tab:hover{transform:translateY(-2px);color:#fff;border-color:#a8b6ff38;background:#ffffff0c}
+.side-tabs.top-tabs .side-tab.active{
+  color:#fff; border-color:#9d9fff72;
+  background:linear-gradient(135deg,#51447b,#303a60 70%,#26354e);
+  box-shadow:inset 0 1px #ffffff22,0 6px 17px #07091662,0 0 0 1px #a68cff10;
+}
+.side-tabs.top-tabs .side-tab.active:after{content:"";position:absolute;left:25%;right:25%;bottom:3px;height:2px;border-radius:5px;background:linear-gradient(90deg,var(--pink),var(--purple),var(--mint));opacity:.95}
+.layout{min-height:0}
+.sidebar .tab-panel.active{flex:1 1 auto;min-height:0}
+@media(max-width:1050px){
+  .side-tabs.top-tabs{grid-template-columns:repeat(9,minmax(0,1fr));gap:6px;padding:7px}
+  .side-tabs.top-tabs .side-tab{gap:6px;padding:9px 6px;font-size:11px;min-height:47px}
+  .side-tabs.top-tabs .tab-icon{font-size:18px}
+}
+@media(min-width:1001px) and (max-width:1050px){
+  .side-tabs.top-tabs .side-tab{gap:4px;padding:7px 3px;font-size:10px}
+  .side-tabs.top-tabs .tab-icon{font-size:16px}
+}
+@media(max-width:1000px){
+  .side-tabs.top-tabs{grid-template-columns:repeat(6,minmax(0,1fr));}
+}
+@media(max-width:790px){
+  .side-tabs.top-tabs{grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;padding:7px;margin-bottom:12px}
+  .side-tabs.top-tabs .side-tab{min-height:56px;flex-direction:column;gap:5px;padding:7px 4px;font-size:11px;white-space:normal}
+  .side-tabs.top-tabs .tab-icon{font-size:21px}
+  .side-tabs.top-tabs .tab-label{max-width:100%;text-align:center}
+}
+@media(max-width:430px){
+  .side-tabs.top-tabs{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+  .side-tabs.top-tabs .side-tab{min-height:56px;font-size:10px}
+}
+
+
+/* Discreet auxiliary controls. */
+.pantry-mark{position:fixed;right:10px;bottom:9px;z-index:45;width:25px;height:25px;border-radius:9px;border:1px solid #c3a5ff26;background:#18182a9c;color:#bca5e8;font-size:12px;opacity:.22;display:grid;place-items:center;backdrop-filter:blur(8px)}
+.pantry-mark:hover,.pantry-mark:focus-visible{opacity:.96;background:#30254a;border-color:#c3a5ff70}
+.modal.admin-modal{width:min(980px,100%);max-height:min(91vh,940px)}
+.modal.admin-modal .modal-body{padding:0;min-height:0}
+.admin-shell{padding:15px;display:flex;flex-direction:column;gap:12px;min-height:0}
+.admin-toolbar{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.admin-status{display:inline-flex;align-items:center;gap:6px;border:1px solid #68f0c234;background:#68f0c20d;color:#8ff4ce;border-radius:999px;padding:7px 10px;font-size:9px;font-weight:950;letter-spacing:.8px;white-space:nowrap}
+.admin-search-wrap{position:relative;flex:1;min-width:160px}
+.admin-search-wrap span{position:absolute;left:11px;top:50%;transform:translateY(-50%);opacity:.65;pointer-events:none}
+.admin-search{width:100%;min-height:37px;background:#0f1424;border:1px solid #ffffff18;color:var(--text);border-radius:11px;padding:9px 12px 9px 32px;font:inherit;font-size:11px;outline:none}
+.admin-search:focus,.admin-input:focus,.admin-select:focus{border-color:#be8affa8;box-shadow:0 0 0 3px #be8aff16}
+.admin-workspace{display:grid;grid-template-columns:150px minmax(0,1fr);gap:12px;min-height:0}
+.admin-tabs{display:flex;flex-direction:column;gap:6px}
+.admin-tab{width:100%;text-align:left;display:flex;align-items:center;gap:9px;padding:11px 10px;border:1px solid #ffffff0c;border-radius:12px;background:#ffffff04;color:#cbd2e8;font-size:11px;font-weight:850}
+.admin-tab .adm-icon{font-size:17px;width:21px;text-align:center}
+.admin-tab.active{color:#f1e7ff;background:linear-gradient(120deg,#9c72f42b,#ff80b11a);border-color:#bd98ff58;box-shadow:inset 3px 0 #bd98ff}
+.admin-pages{min-width:0;min-height:0}
+.admin-page{display:none;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start;gap:10px}
+.admin-page.active{display:grid}
+.admin-card{min-width:0;padding:13px;border-radius:15px;border:1px solid #ffffff12;background:linear-gradient(145deg,#ffffff08,#ffffff03)}
+.admin-card.wide{grid-column:1/-1}
+.admin-card h4{margin:0 0 5px;font-size:12px;font-weight:950;display:flex;align-items:center;gap:7px}
+.admin-card p{margin:0 0 11px;color:var(--muted);font-size:10px;line-height:1.5}
+.admin-field{display:flex;flex-direction:column;gap:5px;min-width:0;margin:8px 0}
+.admin-field label{font-size:10px;color:#bfc8e3;font-weight:800}
+.admin-input,.admin-select{width:100%;min-width:0;min-height:36px;border:1px solid #ffffff19;border-radius:10px;background:#111729;color:var(--text);padding:8px 10px;font:inherit;font-size:11px;outline:none}
+.admin-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.admin-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+.admin-actions .btn{flex:1 1 auto;min-width:100px}
+.admin-note{border:1px solid #be8aff25;background:#be8aff0c;border-radius:11px;padding:10px;color:#c8c0df;font-size:10px;line-height:1.45;margin-top:10px}
+.admin-results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;max-height:58vh;overflow:auto}
+.admin-result{display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:12px;border-radius:12px;border:1px solid #ffffff15;background:#ffffff06;text-align:left}
+.admin-result strong{font-size:11px}.admin-result span{font-size:9px;color:var(--muted)}
+.admin-empty{padding:22px;text-align:center;color:var(--muted);font-size:11px;grid-column:1/-1}
+.admin-searching .admin-workspace{display:none}
+@media(max-width:680px){.modal.admin-modal{max-height:94vh}.admin-shell{padding:10px;gap:9px}.admin-workspace{grid-template-columns:1fr}.admin-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}.admin-tab{justify-content:center;text-align:center;flex-direction:column;gap:3px;padding:8px 4px;font-size:9px}.admin-tab .adm-icon{font-size:16px}.admin-page{grid-template-columns:1fr}.admin-card.wide{grid-column:auto}.admin-results{grid-template-columns:1fr}.admin-toolbar .admin-status{order:0}.admin-search-wrap{order:1;flex-basis:100%}.admin-toolbar #admLock{order:2;margin-left:auto}}
+@media(prefers-reduced-motion:reduce){.pantry-mark{transition:none}}
+
+
+
+/* Full-screen rainbow edition: top navigation switches full-size workspaces. */
+:root{
+  --bg:#090b19;--panel:#15182b;--panel2:#1e2340;--panel3:#282d50;--line:#6550a0;
+  --text:#fffaff;--muted:#c0badc;--pink:#ff68b6;--gold:#ffe66d;--mint:#74ffd5;
+  --blue:#70dfff;--purple:#c18aff;--rainbow:linear-gradient(115deg,#ff5797 0%,#ffad59 16%,#f9f36a 31%,#63f1ad 47%,#55dcff 63%,#a68bff 79%,#ff76cf 100%);
+}
+html,body{width:100%;height:100%;min-height:100%;overflow:hidden}
+body.rainbow-theme{position:relative;background:linear-gradient(130deg,#100a22,#10182d 42%,#1a1030);background-size:240% 240%;animation:rainbowBackdrop 24s ease-in-out infinite;color:var(--text)}
+body.rainbow-theme:before{content:"";position:fixed;inset:-25%;z-index:-1;pointer-events:none;background:conic-gradient(from 0deg at 50% 50%,#ff4f9512,#ffb84d15,#f8f76813,#5df0b613,#52d9ff17,#a477ff19,#ff63ca15,#ff4f9512);filter:blur(55px);animation:rainbowSpin 45s linear infinite}
+.topbar{position:relative;z-index:35;border-bottom:1px solid transparent;background:linear-gradient(#0c0f20f2,#0c0f20f2) padding-box,var(--rainbow) border-box;background-size:100% 100%,260% 260%;animation:rainbowBorder 12s linear infinite;backdrop-filter:blur(22px)}
+.logo{background:var(--rainbow);background-size:280% 280%;animation:logoFloat 3.6s ease-in-out infinite,rainbowShift 8s linear infinite;box-shadow:0 0 22px #cf73ff52,0 0 42px #50e6ff13}
+.logo:after{border-color:#ffffff65;box-shadow:0 0 15px #d68cff50}
+.page{height:calc(100dvh - 66px);width:100%;max-width:none;margin:0;padding:8px clamp(10px,1.8vw,25px) 10px;display:flex;flex-direction:column;gap:8px;overflow:hidden}
+.page>.hero{display:none!important}
+.side-tabs.top-tabs{flex:0 0 auto;display:grid;grid-template-columns:repeat(9,minmax(0,1fr));grid-auto-rows:minmax(43px,auto);gap:6px;width:100%;max-height:none;overflow:visible;margin:0;padding:7px;border:1px solid transparent;border-radius:17px;background:linear-gradient(#111326f5,#111326f5) padding-box,var(--rainbow) border-box;background-size:100% 100%,300% 300%;box-shadow:0 7px 28px #03040b55;animation:rainbowBorder 14s linear infinite}
+.side-tabs.top-tabs .side-tab{min-height:43px;min-width:0;display:flex;align-items:center;justify-content:center;gap:7px;padding:7px 8px;position:relative;overflow:hidden;border:1px solid #ffffff0c;border-radius:12px;background:#ffffff05;color:#d7d2ec;font-size:11px;font-weight:900;white-space:nowrap;transition:transform .2s,background .25s,box-shadow .25s,border-color .25s,color .25s}
+.side-tabs.top-tabs .side-tab:before{content:"";position:absolute;inset:0;opacity:0;pointer-events:none;background:var(--rainbow);background-size:220% 220%;transition:opacity .25s;animation:rainbowShift 8s linear infinite}
+.side-tabs.top-tabs .side-tab>*{position:relative;z-index:1}
+.side-tabs.top-tabs .tab-icon{font-size:18px;filter:drop-shadow(0 2px 5px #0006);transition:transform .22s}
+.side-tabs.top-tabs .side-tab:hover{transform:translateY(-2px);border-color:#ffffff55;color:#fff;box-shadow:0 6px 16px #0004}
+.side-tabs.top-tabs .side-tab:hover:before{opacity:.15}
+.side-tabs.top-tabs .side-tab:hover .tab-icon{transform:scale(1.12) rotate(-5deg)}
+.side-tabs.top-tabs .side-tab.active{color:#fff;border-color:#ffffff70;background:linear-gradient(#ffffff18,#ffffff09);box-shadow:inset 0 0 0 1px #ffffff12,0 0 0 1px #ff7ec92b,0 6px 18px #03040b66,0 0 18px #b86fff22}
+.side-tabs.top-tabs .side-tab.active:before{opacity:.19}
+.side-tabs.top-tabs .side-tab.active:after{content:"";position:absolute;left:18%;right:18%;bottom:2px;height:3px;border-radius:8px;background:var(--rainbow);background-size:250% 250%;animation:rainbowShift 5s linear infinite;box-shadow:0 0 10px #d08aff85}
+.workspace{flex:1 1 auto;min-height:0;min-width:0;width:100%;display:grid;grid-template-columns:minmax(0,1fr) 285px;grid-template-rows:minmax(0,1fr);gap:12px;overflow:hidden;position:relative}
+.workspace[data-view="kitchen"] #kitchenPanel{grid-column:1;grid-row:1}
+.workspace[data-view="kitchen"] .stats-panel{display:flex;grid-column:2;grid-row:1;align-self:start;flex-direction:column;max-height:100%;border-color:#bd78ff48;background:linear-gradient(145deg,#19182ff2,#12182bf2);box-shadow:0 10px 35px #03040b55,0 0 22px #7d5bff10}
+.workspace:not([data-view="kitchen"]){grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr)}
+.workspace:not([data-view="kitchen"]) .stats-panel{display:none!important}
+.workspace:not([data-view="kitchen"])>.tab-panel.active{grid-column:1/-1;grid-row:1;width:100%;height:100%;max-height:100%;min-height:0}
+.workspace .panel{min-width:0;min-height:0;border:1px solid #ffffff1b;border-radius:19px;background:linear-gradient(145deg,#1a1930f5,#10172af5);box-shadow:0 12px 35px #03040b42,0 0 0 1px #a974ff09;position:relative}
+.workspace .panel:before{content:"";position:absolute;inset:0 0 auto;height:2px;z-index:2;pointer-events:none;background:var(--rainbow);background-size:250% 100%;animation:rainbowShift 9s linear infinite;opacity:.82}
+.workspace .game-panel{display:flex;flex-direction:column;height:100%;overflow:hidden;animation:none}
+.workspace .game-panel .panel-head{flex:0 0 auto;padding:12px 16px;border-bottom-color:#ffffff15;background:linear-gradient(90deg,#ff6da50b,#8f78ff0b,#59def00b)}
+.workspace .board-wrap{flex:1 1 auto;min-height:0;display:flex;padding:12px}
+.workspace .board{height:auto;min-height:0;flex:1 1 auto;border-color:#b18cff45;background:radial-gradient(ellipse at 20% 10%,#ff5cab16,transparent 30%),radial-gradient(ellipse at 80% 85%,#56e5d916,transparent 34%),linear-gradient(140deg,#1b2040,#12172d 62%,#201936);box-shadow:inset 0 0 75px #02040d88,0 0 25px #8662ff0b}
+.workspace .board:after{box-shadow:inset 0 0 75px #080b18a0}
+.workspace .board-toolbar{flex:0 0 auto;border-top-color:#ffffff12;background:linear-gradient(90deg,#ff6da506,#9b75ff07,#54e6d807)}
+.workspace .stats-panel .panel-head{padding:13px 14px;background:linear-gradient(100deg,#ff5e9a13,#9f79ff13,#55def013)}
+.workspace .stats-grid{grid-template-columns:1fr 1fr;padding:11px;gap:8px}
+.workspace .stat{border-color:#ffffff18;background:linear-gradient(135deg,#ffffff09,#ffffff03);}
+.workspace .stat:nth-child(4n+1){box-shadow:inset 2px 0 #ff70a9}
+.workspace .stat:nth-child(4n+2){box-shadow:inset 2px 0 #ffd66b}
+.workspace .stat:nth-child(4n+3){box-shadow:inset 2px 0 #64ecc1}
+.workspace .stat:nth-child(4n){box-shadow:inset 2px 0 #a98bff}
+.workspace .stat .value{background:var(--rainbow);background-size:300% 300%;background-clip:text;-webkit-background-clip:text;color:transparent;animation:rainbowShift 10s linear infinite}
+.workspace .tab-panel.active{display:flex;flex-direction:column;min-height:0;min-width:0;overflow:hidden;animation:workspacePanelIn .32s cubic-bezier(.2,.8,.2,1) both}
+.workspace .tab-panel>.panel-head{flex:0 0 auto;padding:clamp(14px,1.5vw,23px);background:linear-gradient(100deg,#ff5e9a11,#9f79ff10,#55def00b);border-bottom:1px solid #ffffff15}
+.workspace .tab-panel .panel-title{font-size:clamp(16px,1.4vw,21px)}
+.workspace .tab-panel .panel-title .emoji{width:40px;height:40px;font-size:21px;background:linear-gradient(135deg,#ff70a71c,#9b75ff21,#54e6d81a);box-shadow:inset 0 0 0 1px #ffffff12}
+.workspace .tab-panel .subline{font-size:11px}
+.workspace .feature-content,.workspace .shop-list,.workspace .upgrades,.workspace .mission-list,.workspace .index-preview{overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#ad82ff75 #ffffff08}
+.workspace .feature-content{flex:1 1 auto;min-height:0;padding:clamp(14px,2vw,28px);gap:clamp(12px,1.4vw,20px);overflow:auto;display:flex;flex-direction:column}
+.workspace .feature-hero{padding:clamp(18px,2vw,32px);border-color:#ffffff22;background:radial-gradient(ellipse at 100% 0%,#c184ff20,transparent 55%),linear-gradient(115deg,#ff75b30b,#ffdc730a,#72ffd40a,#7b98ff0b);}
+.workspace .feature-hero .feature-icon{font-size:clamp(40px,5vw,66px)}
+.workspace .feature-hero h4{font-size:clamp(18px,2vw,26px)}
+.workspace .feature-hero p{font-size:clamp(12px,1.1vw,15px);max-width:850px}
+.workspace .feature-row{padding:clamp(14px,1.5vw,22px);border-color:#ffffff17;background:linear-gradient(110deg,#ff6c9b08,#a67aff09,#58dfed07)}
+.workspace .feature-row .feature-icon{width:clamp(42px,4vw,58px);height:clamp(42px,4vw,58px);font-size:clamp(22px,2vw,30px);background:linear-gradient(135deg,#ff76ac26,#fbe26d20,#73f4d420,#8b82ff26)}
+.workspace .feature-copy strong{font-size:clamp(13px,1.15vw,16px)}
+.workspace .feature-copy p{font-size:clamp(11px,1vw,13px)}
+.workspace .shop-banner{flex:0 0 auto;margin:16px 16px 0;padding:14px 16px;font-size:12px;border-color:#bc85ff38;background:linear-gradient(105deg,#ff6ca70d,#ffc55c0c,#5cebc90a,#9f7dff0d)}
+.workspace .shop-list{padding:16px;gap:12px}
+.workspace .shop-card{min-height:95px;border-color:#ffffff1b;background:linear-gradient(110deg,#ff67a908,#ffaa6d07,#8d83ff09,#5de8e008)}
+.workspace .shop-card:hover{border-color:#d8b4ff80;box-shadow:0 10px 28px #06071055,0 0 16px #a674ff19}
+.workspace .shop-icon{background:linear-gradient(135deg,#ff6aa72b,#ffdc6d25,#65edc624,#8b85ff35);box-shadow:inset 0 0 0 1px #ffffff1a}
+.workspace .shop-buy,.btn.primary{color:#201028;background:var(--rainbow);background-size:250% 250%;animation:rainbowShift 10s linear infinite;box-shadow:0 6px 18px #a86fff25}
+.workspace .btn.mint{background:linear-gradient(120deg,#6affd1,#83dbff,#b6a1ff);color:#101529}
+.workspace .btn.gold{background:linear-gradient(120deg,#fff08a,#ffba80,#ff83ba);color:#2e1330}
+.workspace .btn.secondary{background:linear-gradient(120deg,#ffffff0e,#ffffff05);border:1px solid #ffffff20}
+.workspace .btn:hover:not(:disabled){box-shadow:0 8px 22px #0004,0 0 15px #a77cff20}
+.workspace .upgrade-icon{background:linear-gradient(135deg,#ff67a92c,#ffdb6824,#6bf0c123,#9b81ff32)}
+.workspace .progress-fill{background:var(--rainbow);background-size:250% 250%;animation:rainbowShift 8s linear infinite}
+.workspace .index-card,.workspace .mission{background:linear-gradient(125deg,#ff6ca708,#ffda6a06,#60f1ce07,#9881ff08);border-color:#ffffff19}
+.workspace .panel-head .panel-title .emoji{animation:iconHalo 5s ease-in-out infinite}
+.workspace .tab-panel .upgrades,.workspace .tab-panel .index-preview,.workspace .tab-panel .mission-list{flex:1 1 auto;min-height:0;overflow:auto;padding:clamp(14px,1.8vw,24px);gap:12px}
+.workspace .upgrades{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));align-content:start}
+.workspace .upgrade{min-height:92px;padding:14px;background:linear-gradient(120deg,#ff6ca708,#ffda6a06,#60f1ce07,#9881ff08);border-color:#ffffff19}
+.workspace .upgrade-info strong{font-size:13px}
+.workspace .upgrade-info p{font-size:11px}
+.workspace .upgrade-buy{font-size:11px;background:linear-gradient(120deg,#fff0a0,#ffad92,#e7a0ff);color:#23132e}
+.workspace .index-preview{display:flex;flex-direction:column}
+.workspace .preview-items{gap:10px}.workspace .preview-food{width:48px;height:48px;font-size:26px}
+.workspace .mission-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));align-content:start}
+.workspace .mission{padding:15px}.workspace .mission-title{font-size:13px}.workspace .mission-desc{font-size:11px}
+.workspace .feature-button{border-color:#ffffff20;background:linear-gradient(120deg,#ff6da512,#ffdc6c10,#60f1ce0b,#9d7bff12);}
+.workspace .panel-head .btn{flex:none}
+.modal{border:1px solid transparent;background:linear-gradient(145deg,#1b1932,#10172a) padding-box,var(--rainbow) border-box;background-size:100% 100%,300% 300%;animation:rainbowBorder 15s linear infinite,modalIn .18s ease}
+.modal-head{background:linear-gradient(100deg,#ff5e9a13,#9f79ff13,#55def013)}
+.toast{border-color:#b889ff75;background:linear-gradient(110deg,#1e1833f5,#14212cf5);box-shadow:0 10px 35px #0007,0 0 16px #a06bff16}
+.pantry-mark{border-color:#ffffff3a;background:linear-gradient(135deg,#19172df0,#11192cf0);color:#f7dcff;opacity:.45;box-shadow:0 0 13px #a875ff35}
+.celebration-layer{overflow:hidden}
+@keyframes rainbowShift{0%{background-position:0% 50%;filter:hue-rotate(0deg)}50%{background-position:100% 50%;filter:hue-rotate(20deg)}100%{background-position:0% 50%;filter:hue-rotate(0deg)}}
+@keyframes rainbowBackdrop{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+@keyframes rainbowBorder{0%{background-position:0 0,0% 50%}100%{background-position:0 0,300% 50%}}
+@keyframes rainbowSpin{to{transform:rotate(360deg)}}
+@keyframes iconHalo{0%,100%{filter:drop-shadow(0 0 0 #ae83ff00)}50%{filter:drop-shadow(0 0 8px #ac83ff55)}}
+@keyframes workspacePanelIn{from{opacity:0;transform:translateY(10px) scale(.995);filter:saturate(.65)}to{opacity:1;transform:none;filter:saturate(1)}}
+.workspace-transition{animation:workspaceFlash .35s ease-out}
+@keyframes workspaceFlash{0%{filter:brightness(1.2) saturate(1.5)}100%{filter:none}}
+@media(max-width:1080px){
+  .side-tabs.top-tabs{grid-template-columns:repeat(6,minmax(0,1fr))}
+  .workspace[data-view="kitchen"]{grid-template-columns:minmax(0,1fr) 240px}
+  .side-tabs.top-tabs .side-tab{font-size:10px;padding:7px 5px}
+}
+@media(max-width:790px){
+  html,body{height:100%;min-height:0;overflow:hidden}
+  .topbar{height:60px;min-height:60px;padding:7px 10px;gap:8px}
+  .brand{gap:8px}.brand h1{font-size:15px}.brand small{display:none}.logo{width:38px;height:38px}
+  .top-actions{gap:5px}.pill{padding:7px 9px}.icon-btn{width:35px;height:35px}
+  .page{height:calc(100dvh - 60px);padding:6px 7px 7px;gap:6px}
+  .side-tabs.top-tabs{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(88px,auto);grid-template-rows:1fr;gap:6px;max-height:none;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;scrollbar-color:#c58dff65 transparent;padding:6px;border-radius:14px}
+  .side-tabs.top-tabs .side-tab{min-height:44px;flex-direction:row;gap:6px;justify-content:center;padding:6px 10px;font-size:10px}
+  .side-tabs.top-tabs .tab-icon{font-size:17px}
+  .workspace{gap:0;grid-template-columns:minmax(0,1fr)}
+  .workspace[data-view="kitchen"]{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr)}
+  .workspace[data-view="kitchen"] #kitchenPanel{grid-column:1;grid-row:1}
+  .workspace[data-view="kitchen"] .stats-panel{display:none}
+  .workspace:not([data-view="kitchen"])>.tab-panel.active{grid-column:1;grid-row:1}
+  .workspace .game-panel .panel-head{padding:9px 10px;gap:6px}
+  .workspace .panel-title{font-size:12px}.workspace .panel-title .emoji{width:29px;height:29px;font-size:15px}
+  .workspace .board-wrap{padding:7px}.workspace .board-toolbar{padding:8px;gap:8px}
+  .workspace .board-actions{gap:4px}.workspace .board-actions .btn{padding:7px 8px;font-size:9px}
+  .workspace .board{border-radius:13px}.workspace .tab-panel>.panel-head{padding:13px}
+  .workspace .feature-content{padding:12px;gap:10px}
+  .workspace .shop-banner{margin:10px 10px 0;padding:10px;font-size:10px}.workspace .shop-list{padding:10px;gap:8px}
+  .workspace .shop-card{min-height:78px;padding:8px;grid-template-columns:38px minmax(0,1fr) auto;gap:7px}.workspace .shop-icon{width:38px;height:38px;font-size:21px}
+}
+@media(max-width:430px){
+  .brand h1{font-size:13px}.save-state{display:none}.top-actions .pill{font-size:10px}
+  .side-tabs.top-tabs{grid-auto-columns:minmax(82px,auto)}
+  .workspace .board-actions #dropFoodBtn{display:none}
+  .workspace .selected-info{gap:6px}.workspace .selected-desc{display:none}
+  .workspace .mini-actions{gap:4px}.workspace .mini-actions .btn{padding:7px 7px;font-size:9px}
+}
+@media(prefers-reduced-motion:reduce){
+  body.rainbow-theme,body.rainbow-theme:before,.topbar,.side-tabs.top-tabs,.logo,.logo:after,.side-tabs.top-tabs .side-tab:before,.workspace .panel:before,.workspace .stat .value,.workspace .progress-fill,.workspace .btn.primary,.workspace .shop-buy,.modal{animation:none!important}
+  .workspace *{transition-duration:.01ms!important}
+}
+
+
+
+/* Extra animated colour wash across every game area. Food tiles remain still. */
+.workspace .panel{
+  background:
+    radial-gradient(ellipse at 0% 0%,#ff5e9a23,transparent 42%),
+    radial-gradient(ellipse at 100% 0%,#ffcd6820,transparent 40%),
+    radial-gradient(ellipse at 0% 100%,#60f2c71b,transparent 38%),
+    radial-gradient(ellipse at 100% 100%,#a178ff24,transparent 42%),
+    linear-gradient(145deg,#1b1932f7,#10172af7);
+  background-size:180% 180%,180% 180%,180% 180%,180% 180%,100% 100%;
+  background-position:0% 0%,100% 0%,0% 100%,100% 100%,center;
+  animation:rainbowPanelWash 23s ease-in-out infinite alternate;
+}
+.workspace .stats-panel{background:
+  radial-gradient(ellipse at 0 0,#ff5e9a25,transparent 45%),
+  radial-gradient(ellipse at 100% 0,#ffc55b22,transparent 40%),
+  radial-gradient(ellipse at 100% 100%,#8f7aff24,transparent 45%),
+  linear-gradient(145deg,#19172ef7,#11172af7);background-size:160% 160%,160% 160%,160% 160%,100% 100%;animation:rainbowPanelWash 19s ease-in-out infinite alternate-reverse}
+.workspace .board{
+  background:
+    radial-gradient(ellipse at 20% 15%,#ff64a928,transparent 34%),
+    radial-gradient(ellipse at 85% 80%,#61efdc22,transparent 34%),
+    linear-gradient(140deg,#1d1b3b,#141b35 58%,#271833);
+  background-size:180% 180%,180% 180%,260% 260%;
+  animation:boardRainbowWash 34s ease-in-out infinite alternate;
+}
+.workspace .feature-row,.workspace .upgrade,.workspace .shop-card,.workspace .mission,.workspace .index-card{
+  background:linear-gradient(115deg,#ff6ca710,#ffc7660b,#64f0bd0b,#74dfff0a,#b084ff12);
+  background-size:220% 220%;animation:cardColorDrift 18s ease-in-out infinite alternate;
+}
+.workspace .feature-row:nth-child(even),.workspace .upgrade:nth-child(even),.workspace .shop-card:nth-child(even),.workspace .mission:nth-child(even){animation-delay:-6s}
+.side-tabs.top-tabs .side-tab.active{animation:navGlowCycle 5s ease-in-out infinite}
+.workspace .btn.secondary,.workspace .feature-button:not(.green):not(.gold){border:1px solid transparent;background:linear-gradient(130deg,#211934,#182137) padding-box,var(--rainbow) border-box;background-size:100% 100%,260% 260%;animation:rainbowBorder 18s linear infinite}
+.workspace .shop-buy:hover:not(:disabled),.workspace .feature-button:hover:not(:disabled),.workspace .upgrade-buy:hover:not(:disabled){filter:brightness(1.12) saturate(1.12);box-shadow:0 0 0 2px #ffffff17,0 0 24px #b780ff4a}
+.food{border-color:#ffffff58;box-shadow:0 9px 15px #04061172,inset 0 1px #ffffff19,0 0 0 1px #ff7cb31a}
+.food.selected{outline:2px solid #fff;outline-offset:2px;box-shadow:0 0 0 4px #fb70bb35,0 0 0 8px #7d7aff18,0 9px 22px #04061190}
+@keyframes rainbowPanelWash{0%{background-position:0% 0%,100% 0%,0% 100%,100% 100%,center}50%{background-position:40% 30%,70% 20%,20% 60%,90% 40%,center}100%{background-position:100% 20%,0% 40%,100% 75%,0% 80%,center}}
+@keyframes boardRainbowWash{0%{background-position:0% 0%,100% 100%,0% 50%}50%{background-position:80% 20%,20% 80%,100% 50%}100%{background-position:20% 100%,85% 10%,0% 50%}}
+@keyframes cardColorDrift{0%{background-position:0% 50%;border-color:#ffffff19}50%{border-color:#cb8fff39}100%{background-position:100% 50%;border-color:#75edda31}}
+@keyframes navGlowCycle{0%,100%{box-shadow:inset 0 0 0 1px #ffffff12,0 6px 18px #03040b66,0 0 13px #ff78c31a}50%{box-shadow:inset 0 0 0 1px #ffffff1e,0 6px 18px #03040b66,0 0 20px #a77bff3a}}
+@media(prefers-reduced-motion:reduce){
+  .workspace .panel,.workspace .stats-panel,.workspace .board,.workspace .feature-row,.workspace .upgrade,.workspace .shop-card,.workspace .mission,.workspace .index-card,.side-tabs.top-tabs .side-tab.active,.workspace .btn.secondary,.workspace .feature-button:not(.green):not(.gold){animation:none!important}
+}
+
+
+/* Minute mystery drop: the board food remains still; only the reveal overlay animates. */
+.special-drop-status{position:absolute;right:12px;top:12px;z-index:19;display:flex;align-items:center;gap:8px;padding:8px 11px;border-radius:12px;border:1px solid #ffb5ee65;background:linear-gradient(110deg,#ff709d27,#9e7bff32,#5eeed02b);backdrop-filter:blur(10px);box-shadow:0 4px 22px #0005,0 0 18px #c08cff1e;font-size:9px;font-weight:950;letter-spacing:.45px;pointer-events:none;animation:specialChipGlow 3s ease-in-out infinite}
+.special-drop-status strong{font-size:13px;font-variant-numeric:tabular-nums;color:#fff1a6}.special-drop-status.ready{border-color:#ffdc8c;background:linear-gradient(120deg,#ff6ca755,#ffdc6b44,#67f2d944);animation:specialChipReady .7s ease-in-out infinite alternate}
+.combo-board-chip{position:absolute;left:12px;top:12px;z-index:18;display:flex;align-items:center;gap:7px;flex-wrap:wrap;max-width:45%;padding:7px 10px;border-radius:12px;border:1px solid #ffffff25;background:#15172bd9;backdrop-filter:blur(8px);box-shadow:0 4px 18px #0004;font-size:10px;font-weight:950;color:#ffd38d;pointer-events:none}.combo-board-chip strong{color:#fff;font-size:13px}.combo-board-chip small{width:100%;font-size:8px;color:#bfc8e2;font-weight:700}
+.special-reveal{position:absolute;inset:0;z-index:40;display:grid;place-items:center;overflow:hidden;pointer-events:none}.special-reveal[hidden]{display:none!important}.reveal-backdrop{position:absolute;inset:0;background:radial-gradient(circle at center,#fff2ad4d 0%,#ff86d32c 20%,#8e7bff2b 44%,#0b1020b8 100%);opacity:0}.reveal-rays{position:absolute;width:150%;aspect-ratio:1;border-radius:50%;background:repeating-conic-gradient(from 0deg,#ffd96e22 0deg 7deg,#ff75bd20 7deg 14deg,#8d7bff20 14deg 21deg,#5debd51d 21deg 28deg,transparent 28deg 35deg);opacity:0;filter:blur(1px)}.reveal-card{position:relative;z-index:2;width:min(88%,370px);padding:22px 18px 20px;text-align:center;border-radius:24px;border:1px solid #fff9;background:linear-gradient(150deg,#191b35f5,#10172bf5) padding-box,linear-gradient(130deg,#ff77bd,#ffdc75,#63f2ce,#8c85ff,#ff77bd) border-box;box-shadow:0 25px 80px #0009,0 0 45px #c18cff52;opacity:0;transform:translateY(30px) scale(.55) rotate(-5deg)}.reveal-kicker{font-size:10px;font-weight:1000;letter-spacing:2px;color:#fff0a4;text-shadow:0 0 15px #ffda77}.reveal-ring{width:118px;height:118px;margin:13px auto 11px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(#ff84c7,#ffe47c,#6af2cd,#8a88ff,#ff84c7);padding:4px;box-shadow:0 0 0 7px #fff1,0 0 40px #ff92d88f}.reveal-ring:before{content:"";position:absolute;width:110px;height:110px;border-radius:50%;background:#171a32}.reveal-emoji{position:relative;font-size:66px;filter:drop-shadow(0 4px 12px #fff7)}.reveal-title{font-size:clamp(19px,3.4vw,27px);font-weight:1000;background:linear-gradient(90deg,#ffb9e5,#fff0a4,#9cffe1,#c3b1ff);background-clip:text;color:transparent}.reveal-meta{margin-top:7px;font-size:10px;font-weight:900;letter-spacing:1px;color:#d8dff5}.reveal-tag{margin:12px auto 0;display:inline-block;border:1px solid #fff3;border-radius:999px;padding:7px 11px;background:#ffffff0d;color:#fff;font-size:9px;font-weight:950;letter-spacing:1px}.reveal-playing .reveal-backdrop{animation:revealBackdrop 2.8s ease both}.reveal-playing .reveal-rays{animation:revealRays 2.8s cubic-bezier(.15,.7,.25,1) both}.reveal-playing .reveal-card{animation:revealCard .72s cubic-bezier(.16,1.4,.35,1) both}.rainbow-rush-card{border-color:#f8b8ff8a;background:linear-gradient(120deg,#ff73b51c,#ffd96d16,#6af0d51a,#9585ff1f);box-shadow:inset 0 0 30px #c08cff0c,0 0 24px #b087ff12}.admin-card-pulse{animation:adminAbusePulse .6s ease-out}
+@keyframes specialChipGlow{0%,100%{box-shadow:0 4px 22px #0005,0 0 9px #c08cff20}50%{box-shadow:0 4px 22px #0005,0 0 22px #ff82d850}}
+@keyframes specialChipReady{from{transform:scale(1)}to{transform:scale(1.035)}}
+@keyframes revealBackdrop{0%{opacity:0}18%,72%{opacity:1}100%{opacity:0}}
+@keyframes revealRays{0%{opacity:0;transform:scale(.1) rotate(-45deg)}18%{opacity:.85}75%{opacity:.65}100%{opacity:0;transform:scale(1.4) rotate(80deg)}}
+@keyframes revealCard{0%{opacity:0;transform:translateY(30px) scale(.55) rotate(-5deg);filter:blur(7px)}55%{opacity:1;transform:translateY(-3px) scale(1.04) rotate(1deg);filter:blur(0)}75%{transform:translateY(0) scale(1)}100%{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes adminAbusePulse{0%{box-shadow:0 0 0 0 #ff80c800}40%{box-shadow:0 0 0 5px #ff80c82e,0 0 28px #ff80c82e}100%{box-shadow:0 0 0 0 #ff80c800}}
+@media(max-width:790px){.special-drop-status{right:7px;top:7px;gap:5px;padding:6px 8px;font-size:8px}.special-drop-status strong{font-size:11px}.combo-board-chip{left:7px;top:7px;padding:6px 8px;max-width:45%}.combo-board-chip small{font-size:7px}.reveal-card{padding:17px 13px}}
+@media(prefers-reduced-motion:reduce){.special-drop-status,.special-drop-status.ready,.special-reveal *{animation:none!important}.special-reveal .reveal-card{opacity:1;transform:none}.special-reveal .reveal-backdrop{opacity:.75}}
+
+
+/* Active area owns the full workspace; the kitchen must not remain visible behind other tabs. */
+.workspace>.tab-panel:not(.active){display:none!important}
+.workspace:not([data-view="kitchen"]) #kitchenPanel{display:none!important}
+.workspace[data-view="kitchen"] #kitchenPanel{display:flex}
+
+</style>
+</head>
+<body class="rainbow-theme">
+<header class="topbar">
+  <div class="brand">
+    <div class="logo">🍩</div>
+    <div><h1>Merge Munchies</h1><small>RNG Kitchen</small></div>
+  </div>
+  <div class="top-actions">
+    <span class="save-state" id="saveState">● SAVED</span>
+    <div class="pill coins"><span>🪙</span><span id="coinTop">0</span></div>
+    <button class="icon-btn" id="openStats" title="Stats & settings" aria-label="Stats and settings">⚙</button>
+  </div>
+</header>
+
+<main class="page">
+  <section class="hero">
+    <div>
+      <div class="eyebrow">✦ Your tiny food empire ✦</div>
+      <h2>Merge it. <span style="color:var(--pink)">Roll big.</span></h2>
+      <p>Drag matching foods together, chase rare mutations, and discover the most ridiculous dishes in the kitchen.</p>
+    </div>
+    <div class="hero-badges"><span class="tag pink">🎲 RNG ON</span><span class="tag">🧲 OPEN BOARD</span><span class="tag mint">💾 AUTO-SAVE</span></div>
+  </section>
+
+  <nav class="side-tabs top-tabs" aria-label="Kitchen panels">
+    <button class="side-tab active" data-panel="kitchenPanel" aria-controls="kitchenPanel" title="Merge kitchen" aria-label="Merge kitchen" aria-pressed="true"><span class="tab-icon" aria-hidden="true">🍩</span><span class="tab-label">Kitchen</span></button>
+    <button class="side-tab" data-panel="shopPanel" aria-controls="shopPanel" title="Food RNG shop" aria-label="Food RNG shop" aria-pressed="false"><span class="tab-icon" aria-hidden="true">🎲</span><span class="tab-label">Shop</span></button>
+    <button class="side-tab" data-panel="upgradesPanel" aria-controls="upgradesPanel" title="Kitchen upgrades" aria-label="Kitchen upgrades" aria-pressed="false"><span class="tab-icon" aria-hidden="true">⬆️</span><span class="tab-label">Boosts</span></button>
+    <button class="side-tab" data-panel="indexPanel" aria-controls="indexPanel" title="Food index" aria-label="Food index" aria-pressed="false"><span class="tab-icon" aria-hidden="true">📚</span><span class="tab-label">Index</span></button>
+    <button class="side-tab" data-panel="missionsPanel" aria-controls="missionsPanel" title="Kitchen missions" aria-label="Kitchen missions" aria-pressed="false"><span class="tab-icon" aria-hidden="true">🎯</span><span class="tab-label">Goals</span></button>
+    <button class="side-tab" data-panel="dailyPanel" aria-controls="dailyPanel" title="Daily rewards" aria-label="Daily rewards" aria-pressed="false"><span class="tab-icon" aria-hidden="true">🎁</span><span class="tab-label">Daily</span></button>
+    <button class="side-tab" data-panel="wheelPanel" aria-controls="wheelPanel" title="Lucky wheel" aria-label="Lucky wheel" aria-pressed="false"><span class="tab-icon" aria-hidden="true">🎡</span><span class="tab-label">Wheel</span></button>
+    <button class="side-tab" data-panel="achievementsPanel" aria-controls="achievementsPanel" title="Achievement hall" aria-label="Achievement hall" aria-pressed="false"><span class="tab-icon" aria-hidden="true">🏆</span><span class="tab-label">Awards</span></button>
+    <button class="side-tab" data-panel="rebirthPanel" aria-controls="rebirthPanel" title="Kitchen rebirth" aria-label="Kitchen rebirth" aria-pressed="false"><span class="tab-icon" aria-hidden="true">🔁</span><span class="tab-label">Rebirth</span></button>
+    <button class="side-tab" data-panel="mutationLabPanel" aria-controls="mutationLabPanel" title="Mutation lab" aria-label="Mutation lab" aria-pressed="false"><span class="tab-icon" aria-hidden="true">🧪</span><span class="tab-label">Lab</span></button>
+    <button class="side-tab" data-panel="marketPanel" aria-controls="marketPanel" title="Food market" aria-label="Food market" aria-pressed="false"><span class="tab-icon" aria-hidden="true">💸</span><span class="tab-label">Market</span></button>
+    <button class="side-tab" data-panel="researchPanel" aria-controls="researchPanel" title="Research lab" aria-label="Research lab" aria-pressed="false"><span class="tab-icon" aria-hidden="true">🔬</span><span class="tab-label">Research</span></button>
+    <button class="side-tab" data-panel="eventsPanel" aria-controls="eventsPanel" title="Kitchen events" aria-label="Kitchen events" aria-pressed="false"><span class="tab-icon" aria-hidden="true">🎉</span><span class="tab-label">Events</span></button>
+    <button class="side-tab" data-panel="recipesPanel" aria-controls="recipesPanel" title="Recipe book" aria-label="Recipe book" aria-pressed="false"><span class="tab-icon" aria-hidden="true">📖</span><span class="tab-label">Recipes</span></button>
+    <button class="side-tab" data-panel="helpersPanel" aria-controls="helpersPanel" title="Kitchen helpers" aria-label="Kitchen helpers" aria-pressed="false"><span class="tab-icon" aria-hidden="true">🤖</span><span class="tab-label">Helpers</span></button>
+    <button class="side-tab" data-panel="powerupsPanel" aria-controls="powerupsPanel" title="Kitchen power-ups" aria-label="Kitchen power-ups" aria-pressed="false"><span class="tab-icon" aria-hidden="true">🪄</span><span class="tab-label">Power-ups</span></button>
+    <button class="side-tab" data-panel="questsPlusPanel" aria-controls="questsPlusPanel" title="Daily quest board" aria-label="Daily quest board" aria-pressed="false"><span class="tab-icon" aria-hidden="true">🗒️</span><span class="tab-label">Quest Board</span></button>
+    <button class="side-tab" data-panel="expeditionPanel" aria-controls="expeditionPanel" title="Food expedition" aria-label="Food expedition" aria-pressed="false"><span class="tab-icon" aria-hidden="true">🧭</span><span class="tab-label">Expedition</span></button>
+    <button class="side-tab" data-panel="showcasePanel" aria-controls="showcasePanel" title="Food showcase" aria-label="Food showcase" aria-pressed="false"><span class="tab-icon" aria-hidden="true">🌟</span><span class="tab-label">Showcase</span></button>
+  </nav>
+
+
+  <div class="layout">
+    <section class="panel game-panel tab-panel active" id="kitchenPanel">
+      <div class="panel-head">
+        <div class="panel-title"><span class="emoji">🧑‍🍳</span><div>Merge kitchen<div class="subline" id="boardSub">Drag two matching items together</div></div></div>
+        <div class="board-actions">
+          <button class="btn secondary small" id="sortBtn" title="Spread items around the board">↗ Spread</button>
+          <button class="btn mint" id="quickMergeBtn">⚡ Quick merge</button>
+        </div>
+      </div>
+      <div class="board-wrap">
+        <div class="board" id="board" aria-label="Open food merge board">
+          <div class="board-hint">DRAG + DROP · OR TAP TWO MATCHING FOODS</div>
+          <div class="special-drop-status" id="specialDropStatus" aria-live="polite"><span>🌟 SPECIAL FOOD</span><strong id="specialDropTimer">01:00</strong></div>
+          <div class="combo-board-chip" id="comboBoardChip"><span>🔥 COMBO</span><strong id="comboBoardValue">×1.00</strong><small id="comboBoardSub">Merge again to build a streak</small></div>
+          <div class="special-reveal" id="specialReveal" hidden aria-live="assertive"></div>
+          <div id="foodLayer"></div>
+          <div id="fxLayer" style="position:absolute;inset:0;pointer-events:none;z-index:14;overflow:hidden"></div>
+        </div>
+      </div>
+      <div class="board-toolbar">
+        <div class="selected-info">
+          <div class="selected-preview" id="selectedPreview">👆</div>
+          <div><strong id="selectedTitle">Pick a food</strong><span id="selectedDesc">Tap an item to inspect it or choose two to merge.</span></div>
+        </div>
+        <div class="mini-actions">
+          <button class="btn secondary small" id="mergeSelectedBtn" disabled>🔗 Merge pair</button>
+          <button class="btn gold small" id="sellSelectedBtn" disabled>🪙 Sell item</button>
+          <button class="btn secondary small" id="clearSelectBtn">Deselect</button>
+        </div>
+      </div>
+    </section>
+
+    <aside class="sidebar">
+      <section class="panel stats-panel">
+        <div class="panel-head"><div class="panel-title"><span class="emoji">📈</span><div>Your run<div class="subline">Little bites, big numbers</div></div></div></div>
+        <div class="stats-grid">
+          <div class="stat"><div class="label">Coins</div><div class="value" id="coinStat">0</div><div class="foot">Your spendable stash</div></div>
+          <div class="stat"><div class="label">Total merges</div><div class="value" id="mergeStat">0</div><div class="foot">Kitchen combos</div></div>
+          <div class="stat"><div class="label">Best food</div><div class="value" id="bestStat">🥖</div><div class="foot" id="bestName">Bread Bite</div></div>
+          <div class="stat"><div class="label">Index found</div><div class="value" id="indexStat">1%</div><div class="foot" id="indexFoot">Mutations included</div></div>
+        </div>
+      </section>
+      <section class="panel tab-panel" id="shopPanel">
+        <div class="panel-head"><div class="panel-title"><span class="emoji">🎲</span><div>Food RNG shop<div class="subline">Spend coins. Roll something tasty.</div></div></div></div>
+        <div class="shop-banner">Every purchase rolls a food straight onto your open board. Better crates cost more, but offer better tiers or mutation odds.</div>
+        <div class="shop-list" id="shopList"></div>
+      </section>
+      <section class="panel tab-panel" id="upgradesPanel">
+        <div class="panel-head"><div class="panel-title"><span class="emoji">🛍️</span><div>Kitchen upgrades<div class="subline">Get lucky. Earn more.</div></div></div></div>
+        <div class="upgrades" id="upgradeList"></div>
+      </section>
+
+      <section class="panel tab-panel" id="indexPanel">
+        <div class="panel-head">
+          <div class="panel-title"><span class="emoji">📚</span><div>Food index<div class="subline">Collect them all</div></div></div>
+          <button class="btn secondary small" id="openIndex">Open index ↗</button>
+        </div>
+        <div class="index-preview">
+          <div class="progress-row"><span>Discovery progress</span><strong id="indexProgressText">0 / 100</strong></div>
+          <div class="progress-track"><div class="progress-fill" id="indexProgress"></div></div>
+          <div class="preview-items" id="previewItems"></div>
+        </div>
+      </section>
+
+      <section class="panel tab-panel" id="missionsPanel">
+        <div class="panel-head"><div class="panel-title"><span class="emoji">🎯</span><div>Kitchen missions<div class="subline">Small goals, bonus coins</div></div></div></div>
+        <div class="mission-list" id="missions"></div>
+      </section>
+      <section class="panel tab-panel" id="dailyPanel">
+        <div class="panel-head"><div class="panel-title"><span class="emoji">🎁</span><div>Daily rewards<div class="subline">Come back for a bigger streak</div></div></div></div>
+        <div class="feature-content" id="dailyContent"></div>
+      </section>
+      <section class="panel tab-panel" id="wheelPanel">
+        <div class="panel-head"><div class="panel-title"><span class="emoji">🎡</span><div>Lucky wheel<div class="subline">One spin each day</div></div></div></div>
+        <div class="feature-content" id="wheelContent"></div>
+      </section>
+      <section class="panel tab-panel" id="achievementsPanel">
+        <div class="panel-head"><div class="panel-title"><span class="emoji">🏆</span><div>Awards hall<div class="subline">Earn milestones and claim prizes</div></div></div></div>
+        <div class="feature-content" id="achievementsContent"></div>
+      </section>
+      <section class="panel tab-panel" id="rebirthPanel">
+        <div class="panel-head"><div class="panel-title"><span class="emoji">🔁</span><div>Kitchen rebirth<div class="subline">Reset the run for a permanent boost</div></div></div></div>
+        <div class="feature-content" id="rebirthContent"></div>
+      </section>
+      <section class="panel tab-panel" id="mutationLabPanel">
+        <div class="panel-head"><div class="panel-title"><span class="emoji">🧪</span><div>Mutation lab<div class="subline">Upgrade a selected food's mutation</div></div></div></div>
+        <div class="feature-content" id="mutationLabContent"></div>
+      </section>
+      <section class="panel tab-panel" id="marketPanel">
+        <div class="panel-head"><div class="panel-title"><span class="emoji">💸</span><div>Food market<div class="subline">Turn common food into coins</div></div></div></div>
+        <div class="feature-content" id="marketContent"></div>
+      </section>
+      <section class="panel tab-panel" id="researchPanel">
+        <div class="panel-head"><div class="panel-title"><span class="emoji">🔬</span><div>Research lab<div class="subline">Permanently boost mutation odds</div></div></div></div>
+        <div class="feature-content" id="researchContent"></div>
+      </section>
+      <section class="panel tab-panel" id="eventsPanel">
+        <div class="panel-head"><div class="panel-title"><span class="emoji">🎉</span><div>Kitchen events<div class="subline">A special surprise each day</div></div></div></div>
+        <div class="feature-content" id="eventsContent"></div>
+      </section>
+      <section class="panel tab-panel" id="recipesPanel">
+        <div class="panel-head"><div class="panel-title"><span class="emoji">📖</span><div>Recipe book<div class="subline">Claim rewards for high-tier foods</div></div></div></div>
+        <div class="feature-content" id="recipesContent"></div>
+      </section>
+      <section class="panel tab-panel" id="helpersPanel">
+        <div class="panel-head"><div class="panel-title"><span class="emoji">🤖</span><div>Kitchen helpers<div class="subline">Hire a crew to earn passive coins</div></div></div></div>
+        <div class="feature-content" id="helpersContent"></div>
+      </section>
+      <section class="panel tab-panel" id="powerupsPanel">
+        <div class="panel-head"><div class="panel-title"><span class="emoji">🪄</span><div>Kitchen power-ups<div class="subline">One-shot boosts and lucky tricks</div></div></div></div>
+        <div class="feature-content" id="powerupsContent"></div>
+      </section>
+      <section class="panel tab-panel" id="questsPlusPanel"><div class="panel-head"><div class="panel-title"><span class="emoji">🗒️</span><div>Quest Board<div class="subline">Extra challenges for bonus coins</div></div></div></div><div class="feature-content" id="questsPlusContent"></div></section>
+      <section class="panel tab-panel" id="expeditionPanel"><div class="panel-head"><div class="panel-title"><span class="emoji">🧭</span><div>Food Expedition<div class="subline">Send a food hunting for treasure</div></div></div></div><div class="feature-content" id="expeditionContent"></div></section>
+      <section class="panel tab-panel" id="showcasePanel"><div class="panel-head"><div class="panel-title"><span class="emoji">🌟</span><div>Food Showcase<div class="subline">Celebrate your best discovery</div></div></div></div><div class="feature-content" id="showcaseContent"></div></section>
+    </aside>
+  </div>
+  <p class="footer-note">Your progress saves in this browser automatically. Drag with a mouse or finger; on touch screens, tapping two matching foods also merges them. No account or internet connection required.</p>
+</main>
+
+<div class="celebration-layer" id="celebrationLayer" aria-hidden="true"></div>
+<div class="toast-stack" id="toastStack" aria-live="polite"></div>
+<div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal">
+    <div class="modal-head"><div><h3 id="modalTitle">Food index</h3><p id="modalSubtitle">Every tasty discovery counts.</p></div><button class="icon-btn" id="closeModal" aria-label="Close">✕</button></div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<button class="pantry-mark" id="pantryMark" type="button" aria-label="Open kitchen tools" title="Kitchen tools">✦</button>
+
+<script>
+(() => {
+"use strict";
+const SAVE_KEY = "mergeMunchiesSave_v1";
+const foods = [
+  {name:"Bread Bite",emoji:"🥖",color:"#e6b878"},
+  {name:"Apple Slice",emoji:"🍎",color:"#ff7187"},
+  {name:"Cookie",emoji:"🍪",color:"#d59c65"},
+  {name:"Donut",emoji:"🍩",color:"#ff8ec4"},
+  {name:"Burger",emoji:"🍔",color:"#f4b45f"},
+  {name:"Taco",emoji:"🌮",color:"#f2d16c"},
+  {name:"Pizza",emoji:"🍕",color:"#ff9b67"},
+  {name:"Sushi Roll",emoji:"🍣",color:"#f58fa8"},
+  {name:"Ramen Bowl",emoji:"🍜",color:"#ffc56e"},
+  {name:"Birthday Cake",emoji:"🎂",color:"#f49bd0"},
+  {name:"Milkshake",emoji:"🥤",color:"#a9a1ff"},
+  {name:"Waffle Stack",emoji:"🧇",color:"#dfa15e"},
+  {name:"Golden Feast",emoji:"🍱",color:"#ffd166"},
+  {name:"Dragon Fruit Tart",emoji:"🥝",color:"#86dcaa"},
+  {name:"Galaxy Sundae",emoji:"🍨",color:"#a88cff"},
+  {name:"Cosmic Buffet",emoji:"🍲",color:"#72cfff"},
+  {name:"Phoenix Soufflé",emoji:"🧁",color:"#ff9b76"},
+  {name:"Moonlight Macaron",emoji:"🍬",color:"#8ff0df"},
+  {name:"Nebula Noodles",emoji:"🥘",color:"#c7a4ff"},
+  {name:"Infinity Meal",emoji:"🍰",color:"#ffe18c"},
+  {name:"Pretzel Twist",emoji:"🥨",color:"#d99a58"},
+  {name:"Pancake Stack",emoji:"🥞",color:"#f2bd69"},
+  {name:"Popcorn Bucket",emoji:"🍿",color:"#ffe07a"},
+  {name:"Cheese Wedge",emoji:"🧀",color:"#ffdf59"},
+  {name:"Watermelon Slice",emoji:"🍉",color:"#ff7285"},
+  {name:"Coconut Drink",emoji:"🥥",color:"#d7c9a7"},
+  {name:"Blueberry Muffin",emoji:"🫐",color:"#8a9bff"},
+  {name:"Cupcake Tower",emoji:"🧁",color:"#f7a3d3"},
+  {name:"Dumpling Basket",emoji:"🥟",color:"#f0c48a"},
+  {name:"Curry Bowl",emoji:"🍛",color:"#f6b65b"},
+  {name:"Bento Box",emoji:"🍱",color:"#e9a77d"},
+  {name:"Honey Toast",emoji:"🍯",color:"#f3c85b"},
+  {name:"Ice Cream Tower",emoji:"🍦",color:"#a7e4ff"},
+  {name:"Choco Volcano",emoji:"🍫",color:"#b98265"},
+  {name:"Royal Seafood",emoji:"🦞",color:"#ff7b79"},
+  {name:"Rainbow Macaron",emoji:"🌈",color:"#d7a0ff"},
+  {name:"Starfruit Pie",emoji:"🥧",color:"#f5d77a"},
+  {name:"Dragon Feast",emoji:"🐉",color:"#87e6a2"},
+  {name:"Universe Hotpot",emoji:"♨️",color:"#a99aff"},
+  {name:"Multiverse Feast",emoji:"🌌",color:"#c6a6ff"},
+  {name:"Lava Toast",emoji:"🍞",color:"#ff805b"},
+  {name:"Jelly Galaxy",emoji:"🍮",color:"#b98cff"},
+  {name:"Kraken Sushi",emoji:"🍣",color:"#5bd7cc"},
+  {name:"Meteor Meatball",emoji:"🍝",color:"#ff926b"},
+  {name:"Prism Parfait",emoji:"🍧",color:"#ff9dd7"},
+  {name:"Thunder Taco",emoji:"🌮",color:"#ffe16b"},
+  {name:"Aurora Mochi",emoji:"🍡",color:"#a7f4dc"},
+  {name:"Crystal Croissant",emoji:"🥐",color:"#f7d18a"},
+  {name:"Comet Pizza",emoji:"🍕",color:"#ffa56f"},
+  {name:"Stardust Soup",emoji:"🍜",color:"#88d8ff"},
+  {name:"Dragonfire Dumpling",emoji:"🥟",color:"#ff777f"},
+  {name:"Mooncake Castle",emoji:"🥮",color:"#d3b2ff"},
+  {name:"Supernova Burger",emoji:"🍔",color:"#ff9eb9"},
+  {name:"Quantum Quesadilla",emoji:"🫓",color:"#ffd977"},
+  {name:"Infinity Donut",emoji:"🍩",color:"#f8a9ff"},
+  {name:"Timewarp Tiramisu",emoji:"🍰",color:"#b9a4ff"},
+  {name:"Rainbow Ramen",emoji:"🍜",color:"#ff8ed1"},
+  {name:"Nebula Cheesecake",emoji:"🍰",color:"#a6b7ff"},
+  {name:"Cosmic Crown Cake",emoji:"🎂",color:"#ffdf86"},
+  {name:"Multiverse Mega Feast",emoji:"🌠",color:"#c1a0ff"}
+];
+const mutations = [
+  {id:"normal",name:"Normal",short:"",mult:1,color:"#aeb7d0",chance:0.0},
+  {id:"shiny",name:"Shiny",short:"SHINY",mult:1.6,color:"#83e9ff",chance:.12},
+  {id:"golden",name:"Golden",short:"GOLD",mult:2.5,color:"#ffd166",chance:.035},
+  {id:"rainbow",name:"Rainbow",short:"RAINBOW",mult:5,color:"#ff9df1",chance:.009},
+  {id:"cosmic",name:"Cosmic",short:"COSMIC",mult:12,color:"#bd8aff",chance:.0012}
+];
+const mutationMap = Object.fromEntries(mutations.map(m => [m.id,m]));
+const totalIndex = foods.length * mutations.length;
+const $ = id => document.getElementById(id);
+const clamp = (n,min,max) => Math.max(min,Math.min(max,n));
+const fmt = n => {
+  if (!Number.isFinite(n)) return "0";
+  if (n < 1000) return Math.floor(n).toLocaleString();
+  const units = ["K","M","B","T","Qa","Qi"];
+  let value=n, i=-1;
+  while(value>=1000 && i<units.length-1){value/=1000;i++;}
+  return value.toFixed(value>=100?0:value>=10?1:2)+units[i];
+};
+const randomId = () => Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-3);
+const defaultState = () => {
+  const items=[];
+  const starterPositions=[[.18,.27],[.38,.24],[.59,.27],[.78,.24],[.29,.48],[.67,.49]];
+  starterPositions.forEach((p,i)=>items.push({id:randomId(),tier:0,mutation:"normal",x:p[0],y:p[1]}));
+  return {
+    version:1,coins:0,items,selectedId:null,selectedPair:[],
+    discovered:{"0-normal":true},merges:0,itemsMade:items.length,coinsEarned:0,
+    bestTier:0,bestMutation:"normal",lifetimeMerges:0,lifetimeCoins:0,
+    upgrades:{luck:0,earnings:0,skip:0,auto:0},autoEnabled:true,missionsClaimed:{},
+    stats:{mutations:0,skips:0,sold:0,quickMerges:0,specialDrops:0,autoMerges:0,powerupsUsed:0},
+    rebirths:0,researchLevel:0,helperLevel:0,
+    daily:{lastClaim:"",streak:0},wheelLast:"",eventLast:"", expeditionLast:"", questsPlusClaimed:{},
+    achievementsClaimed:{},recipesClaimed:{},lastSeen:Date.now(),autoTimer:0,
+    adminSettings:{luckMultiplier:1,mutationChances:{shiny:12,golden:3.5,rainbow:.9,cosmic:.12}},
+    specialDropNextAt:Date.now()+60000,specialDropQueued:0,specialDropsClaimed:0,
+    comboStreak:0,comboBest:0,comboLastAt:0,
+    rainbowRushUntil:0,rainbowRushCooldownUntil:0,luckyLadleUntil:0,
+    autoMergeUnlocked:false,autoMergeEnabled:false,autoMergeLastAt:Date.now()
+  };
+};
+let state;
+let dirty=false, saveTimer=null, autoInterval=null, helperInterval=null, drag=null, lastTap=0, selectedForMerge=null, currentModal=null, recentlyMergedId=null;
+const board=$("board"), foodLayer=$("foodLayer"), fxLayer=$("fxLayer");
+function sanitiseSave(raw){
+  const fresh=defaultState();
+  if(!raw || typeof raw!=="object") return fresh;
+  const s={...fresh,...raw};
+  s.coins=Math.max(0,Number(s.coins)||0);
+  s.merges=Math.max(0,Number(s.merges)||0);
+  s.itemsMade=Math.max(0,Number(s.itemsMade)||0);
+  s.coinsEarned=Math.max(0,Number(s.coinsEarned)||0);
+  s.lifetimeMerges=Math.max(0,Number(s.lifetimeMerges)||s.merges);
+  s.lifetimeCoins=Math.max(0,Number(s.lifetimeCoins)||s.coinsEarned);
+  s.upgrades={...fresh.upgrades,...(raw.upgrades||{})};
+  for(const key of Object.keys(fresh.upgrades))s.upgrades[key]=clamp(Math.floor(Number(s.upgrades[key])||0),0,key==="auto"?1:20);
+  s.autoEnabled=typeof raw.autoEnabled==="boolean"?raw.autoEnabled:true;
+  s.discovered=raw.discovered&&typeof raw.discovered==="object"?raw.discovered:fresh.discovered;
+  s.missionsClaimed=raw.missionsClaimed&&typeof raw.missionsClaimed==="object"?raw.missionsClaimed:{};
+  s.stats={...fresh.stats,...(raw.stats||{})};
+  s.rebirths=clamp(Math.floor(Number(raw.rebirths)||0),0,1000000);
+  s.researchLevel=clamp(Math.floor(Number(raw.researchLevel)||0),0,10);
+  s.helperLevel=clamp(Math.floor(Number(raw.helperLevel)||0),0,5);
+  s.specialDropNextAt=Number.isFinite(Number(raw.specialDropNextAt))&&Number(raw.specialDropNextAt)>0?Number(raw.specialDropNextAt):Date.now()+60000;
+  s.specialDropQueued=clamp(Math.floor(Number(raw.specialDropQueued)||0),0,10);
+  s.specialDropsClaimed=clamp(Math.floor(Number(raw.specialDropsClaimed)||0),0,1e9);
+  s.comboStreak=clamp(Math.floor(Number(raw.comboStreak)||0),0,10000);
+  s.comboBest=clamp(Math.floor(Number(raw.comboBest)||0),0,10000);
+  s.comboLastAt=clamp(Number(raw.comboLastAt)||0,0,Date.now()+60000);
+  s.rainbowRushUntil=clamp(Number(raw.rainbowRushUntil)||0,0,1e15);
+  s.rainbowRushCooldownUntil=clamp(Number(raw.rainbowRushCooldownUntil)||0,0,1e15);
+  s.luckyLadleUntil=clamp(Number(raw.luckyLadleUntil)||0,0,1e15);
+  s.autoMergeUnlocked=!!raw.autoMergeUnlocked;
+  s.autoMergeEnabled=!!raw.autoMergeEnabled&&s.autoMergeUnlocked;
+  s.autoMergeLastAt=clamp(Number(raw.autoMergeLastAt)||Date.now(),0,1e15);
+  s.daily={...fresh.daily,...(raw.daily||{})};
+  s.daily.streak=clamp(Math.floor(Number(s.daily.streak)||0),0,7);
+  s.wheelLast=typeof raw.wheelLast==="string"?raw.wheelLast:"";
+  s.eventLast=typeof raw.eventLast==="string"?raw.eventLast:"";
+  s.achievementsClaimed=raw.achievementsClaimed&&typeof raw.achievementsClaimed==="object"?raw.achievementsClaimed:{};
+  s.recipesClaimed=raw.recipesClaimed&&typeof raw.recipesClaimed==="object"?raw.recipesClaimed:{};
+  s.items=Array.isArray(raw.items)?raw.items.filter(i=>i&&Number.isFinite(i.tier)&&foods[Math.floor(i.tier)]).slice(0,40).map(i=>({
+    id:String(i.id||randomId()),tier:clamp(Math.floor(i.tier),0,foods.length-1),
+    mutation:mutationMap[i.mutation]?i.mutation:"normal",
+    x:clamp(Number(i.x)||.5,.07,.93),y:clamp(Number(i.y)||.5,.08,.92)
+  })):fresh.items;
+  s.selectedId=null;s.selectedPair=[];
+  // Keep the all-time best tier even when that item is sold or a rebirth clears the board.
+  s.bestTier=clamp(Math.floor(Number(s.bestTier)||0),0,foods.length-1);
+  s.bestMutation=mutationMap[raw.bestMutation]?raw.bestMutation:"normal";
+  const adminDefaults={luckMultiplier:1,mutationChances:{shiny:12,golden:3.5,rainbow:.9,cosmic:.12}};
+  const rawAdmin=raw.adminSettings&&typeof raw.adminSettings==="object"?raw.adminSettings:{};
+  const rawChances=rawAdmin.mutationChances&&typeof rawAdmin.mutationChances==="object"?rawAdmin.mutationChances:{};
+  s.adminSettings={...adminDefaults,...rawAdmin,mutationChances:{...adminDefaults.mutationChances,...rawChances}};
+  s.adminSettings.luckMultiplier=clamp(Number(s.adminSettings.luckMultiplier)||1,.1,100);
+  for(const id of ["shiny","golden","rainbow","cosmic"]){
+    const fallback=adminDefaults.mutationChances[id];
+    const n=Number(s.adminSettings.mutationChances[id]);
+    s.adminSettings.mutationChances[id]=clamp(Number.isFinite(n)?n:fallback,0,100);
+  }
+  return s;
+}
+function load(){
+  try{
+    const raw=localStorage.getItem(SAVE_KEY);
+    if(!raw){state=defaultState();saveNow();return;}
+    state=sanitiseSave(JSON.parse(raw));
+    // Timed food drops only progress while the game is open: never grant offline spawns.
+    state.specialDropNextAt=Date.now()+60000;
+    state.specialDropQueued=0;
+  }catch(err){
+    state=defaultState();
+    toast("Save couldn't be read, so a fresh kitchen was started.","bad");
+  }
+}
+function saveNow(){
+  try{
+    state.lastSeen=Date.now();
+    localStorage.setItem(SAVE_KEY,JSON.stringify(state));
+    dirty=false;
+    $("saveState").textContent="● SAVED";
+    $("saveState").style.color="var(--mint)";
+  }catch(err){
+    $("saveState").textContent="● SAVE BLOCKED";
+    $("saveState").style.color="#ff9bb7";
+  }
+}
+function scheduleSave(){
+  dirty=true;
+  $("saveState").textContent="● SAVING";
+  $("saveState").style.color="var(--gold)";
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(saveNow,350);
+}
+window.addEventListener("beforeunload",()=>{if(dirty)saveNow()});
+document.addEventListener("visibilitychange",()=>{if(document.hidden&&dirty)saveNow()});
+
+function toast(message,type="good"){
+  const node=document.createElement("div");node.className="toast "+type;node.textContent=message;
+  $("toastStack").appendChild(node);
+  setTimeout(()=>{node.style.transition="opacity .25s,transform .25s";node.style.opacity="0";node.style.transform="translateY(-8px)";setTimeout(()=>node.remove(),280)},2450);
+}
+function itemById(id){return state.items.find(i=>i.id===id)}
+function itemValue(item){
+  const mult=mutationMap[item.mutation]?.mult||1;
+  return Math.max(2,Math.round(5*Math.pow(item.tier+1,1.52)*mult));
+}
+function spawnCost(){
+  const high=state.items.reduce((m,i)=>Math.max(m,i.tier),0);
+  return Math.floor(7 + high*2.6 + state.upgrades.auto*12 + Math.max(0,state.items.length-7)*1.6);
+}
+function upgradeCost(key){
+  const level=state.upgrades[key];
+  const base={luck:55,earnings:45,skip:115,auto:650}[key];
+  return Math.floor(base*Math.pow(key==="auto"?1:1.68,level));
+}
+function upgradeMax(key){return key==="auto"?1:20}
+function getMutation(){
+  const admin=state.adminSettings||{luckMultiplier:1,mutationChances:{shiny:12,golden:3.5,rainbow:.9,cosmic:.12}};
+  const luck=(1+state.upgrades.luck*.2+(state.researchLevel||0)*.1+(state.rebirths||0)*.05)*(Date.now()<(Number(state.luckyLadleUntil)||0)?5:1)*clamp(Number(admin.luckMultiplier)||1,.1,100);
+  const chances=admin.mutationChances||{};
+  let cosmic=clamp((Number(chances.cosmic??.12)/100)*luck,0,1);
+  let rainbow=clamp((Number(chances.rainbow??.9)/100)*luck,0,1);
+  let golden=clamp((Number(chances.golden??3.5)/100)*luck,0,1);
+  let shiny=clamp((Number(chances.shiny??12)/100)*luck,0,1);
+  // Keep the probabilities valid even when admin settings push the total above 100%.
+  const total=cosmic+rainbow+golden+shiny;
+  if(total>.999){const scale=.999/total;cosmic*=scale;rainbow*=scale;golden*=scale;shiny*=scale;}
+  const roll=Math.random();
+  if(roll<cosmic)return "cosmic";
+  if(roll<cosmic+rainbow)return "rainbow";
+  if(roll<cosmic+rainbow+golden)return "golden";
+  if(roll<cosmic+rainbow+golden+shiny)return "shiny";
+  return "normal";
+}
+function rollTier(fromTier){
+  const chance=clamp(.035+state.upgrades.skip*.012,0,.27);
+  if(fromTier<foods.length-2 && Math.random()<chance){
+    state.stats.skips++;
+    if(state.upgrades.skip>=4 && fromTier<foods.length-3 && Math.random()<.12){
+      return Math.min(foods.length-1,fromTier+3);
+    }
+    return Math.min(foods.length-1,fromTier+2);
+  }
+  return Math.min(foods.length-1,fromTier+1);
+}
+function discover(tier,mutation,notify=true){
+  const key=`${tier}-${mutation}`;
+  const isNew=!state.discovered[key];
+  state.discovered[key]=true;
+  if(isNew&&mutation!=="normal"){
+    state.stats.mutations++;
+    if(notify)toast(`NEW MUTATION! ${mutationMap[mutation].name} ${foods[tier].name}!`,"gold");
+  }else if(isNew&&tier>0&&notify){
+    toast(`NEW FOOD! ${foods[tier].emoji} ${foods[tier].name}!`,"good");
+  }
+  return isNew;
+}
+function awardCoins(amount,sourceX,sourceY){
+  const rounded=Math.max(0,Math.floor(amount));
+  if(!rounded)return;
+  state.coins+=rounded;state.coinsEarned+=rounded;state.lifetimeCoins+=rounded;
+  if(sourceX!=null&&sourceY!=null)floatText(`+${fmt(rounded)} 🪙`,sourceX,sourceY,"#ffe08a");
+}
+function floatText(text,x,y,color="#92ffdc"){
+  const el=document.createElement("div");el.className="float-text";el.textContent=text;el.style.left=x+"px";el.style.top=y+"px";el.style.color=color;fxLayer.appendChild(el);
+  setTimeout(()=>el.remove(),950);
+}
+function burst(x,y,color="#68f0c2",count=13){
+  for(let i=0;i<count;i++){
+    const el=document.createElement("i");el.className="particle";
+    el.style.left=(x-4)+"px";el.style.top=(y-4)+"px";el.style.background=i%3===0?"#ffd166":color;
+    el.style.setProperty("--dx",((Math.random()-.5)*150)+"px");el.style.setProperty("--dy",((Math.random()-.72)*130)+"px");
+    el.style.animationDelay=(Math.random()*.08)+"s";fxLayer.appendChild(el);setTimeout(()=>el.remove(),800);
+  }
+}
+function boardPoint(item){
+  const rect=board.getBoundingClientRect();
+  return {x:item.x*rect.width,y:item.y*rect.height};
+}
+function renderBoard(){
+  foodLayer.innerHTML="";
+  for(const item of state.items){
+    const food=foods[item.tier], mut=mutationMap[item.mutation]||mutations[0];
+    const el=document.createElement("button");
+    el.type="button";el.className="food "+(item.mutation!=="normal"?item.mutation:"")+(item.id===state.selectedId?" selected":"")+(item.id===recentlyMergedId?" spawn-pop":"");
+    el.dataset.id=item.id;el.setAttribute("aria-label",`${mut.name} ${food.name}, tier ${item.tier+1}`);
+    el.style.left=(item.x*100)+"%";el.style.top=(item.y*100)+"%";
+    if(item.mutation!=="normal")el.style.borderColor=mut.color;
+    el.innerHTML=`<span class="tier-label">T${item.tier+1}</span>${item.mutation!=="normal"?`<span class="mutation-label" style="color:${mut.color}">${mut.short}</span>`:""}<span class="food-emoji">${food.emoji}</span><span class="food-name">${food.name}</span>`;
+    el.addEventListener("pointerdown",e=>pointerDownItem(e,item.id));
+    el.addEventListener("click",e=>{e.preventDefault();selectTap(item.id)});
+    foodLayer.appendChild(el);
+  }
+  $("boardSub").textContent=`${state.items.length} food ${state.items.length===1?"item":"items"} on the board · ${Math.max(0,40-state.items.length)} spaces before it gets busy`;
+  updateSelectionUI();
+}
+function renderStats(){
+  $("coinTop").textContent=fmt(state.coins);$("coinStat").textContent=fmt(state.coins);
+  $("mergeStat").textContent=fmt(state.merges);
+  const best=foods[state.bestTier]||foods[0];
+  $("bestStat").textContent=best.emoji;$("bestName").textContent=best.name;
+  const found=Object.keys(state.discovered).filter(k=>state.discovered[k]).length;
+  const pct=Math.floor(found/totalIndex*100);
+  $("indexStat").textContent=pct+"%";$("indexFoot").textContent=`${found} of ${totalIndex} discoveries`;
+  $("indexProgressText").textContent=`${found} / ${totalIndex}`;$("indexProgress").style.width=(found/totalIndex*100)+"%";
+  const preview=[0,1,2,3,4,5,6,8,10,12,14,19];
+  $("previewItems").innerHTML=preview.map(t=>{
+    const isFound=Object.keys(state.discovered).some(k=>k.startsWith(t+"-")&&state.discovered[k]);
+    return `<div class="preview-food ${isFound?"":"locked"}" title="${isFound?foods[t].name:"Undiscovered food"}">${isFound?foods[t].emoji:"?"}</div>`;
+  }).join("");
+}
+const upgrades=[
+ {id:"luck",icon:"🍀",name:"Lucky seasoning",desc:"Improves your odds of rolling shiny, golden, rainbow and cosmic foods.",effect:l=>`Luck boost: +${l*20}%`,cost:"More rare mutations"},
+ {id:"earnings",icon:"🪙",name:"Tip jar",desc:"Earn more coins whenever two foods merge.",effect:l=>`Merge rewards: +${l*25}%`,cost:"Bigger payouts"},
+ {id:"skip",icon:"🌀",name:"Tier hopper",desc:"Increase your chance to skip a food tier on a merge.",effect:l=>`Skip chance: ${Math.round((.035+l*.012)*100)}%`,cost:"Lucky tier jumps"},
+ {id:"auto",icon:"🤖",name:"Auto-snacker",desc:"Unlock a free basic food every 18 seconds. Can be turned off in settings.",effect:l=>l?"Unlocked · free food every 18s":"Locked · passive food",cost:"Passive snacks"}
+];
+function renderUpgrades(){
+  $("upgradeList").innerHTML=upgrades.map(u=>{
+    const level=state.upgrades[u.id],max=upgradeMax(u.id),cost=upgradeCost(u.id),maxed=level>=max;
+    const label=maxed?"MAX":u.id==="auto"?"🪙 "+fmt(cost):"🪙 "+fmt(cost);
+    return `<div class="upgrade"><div class="upgrade-icon">${u.icon}</div><div class="upgrade-info"><strong>${u.name}</strong><p>${u.desc}</p><div class="level">LVL ${level} · ${u.effect(level)}</div></div><button class="upgrade-buy ${maxed?"max":""}" data-upgrade="${u.id}" ${maxed||state.coins<cost?"disabled":""}>${label}</button></div>`;
+  }).join("");
+  $("upgradeList").querySelectorAll("[data-upgrade]").forEach(btn=>btn.addEventListener("click",()=>buyUpgrade(btn.dataset.upgrade)));
+}
+function buyUpgrade(key){
+  const cost=upgradeCost(key);
+  if(state.upgrades[key]>=upgradeMax(key)){toast("That upgrade is maxed out!","gold");return}
+  if(state.coins<cost){toast(`You need ${fmt(cost-state.coins)} more coins.`,"bad");return}
+  state.coins-=cost;state.upgrades[key]++;
+  toast(`${upgrades.find(u=>u.id===key).name} upgraded!`,"good");
+  if(key==="auto"&&state.upgrades.auto){state.autoEnabled=true;startAutoDrop();}
+  renderAll();scheduleSave();
+}
+function updateSelectionUI(){
+  const selected=itemById(state.selectedId);
+  if(!selected){
+    $("selectedPreview").textContent="👆";$("selectedTitle").textContent="Pick a food";$("selectedDesc").textContent="Tap an item to inspect it or choose two to merge.";
+    $("sellSelectedBtn").disabled=true;$("mergeSelectedBtn").disabled=true;return;
+  }
+  const food=foods[selected.tier],mut=mutationMap[selected.mutation];
+  $("selectedPreview").textContent=food.emoji;
+  $("selectedTitle").textContent=`${mut.name} ${food.name}`;
+  $("selectedDesc").textContent=`Tier ${selected.tier+1} · Sell value ${fmt(itemValue(selected))} coins`;
+  $("sellSelectedBtn").disabled=state.items.length<=1;
+  if(state.items.length<=1)$("sellSelectedBtn").title="Keep at least one food on the board";
+  else $("sellSelectedBtn").title="Sell selected food for coins";
+  const pair=state.items.find(i=>i.id!==selected.id&&i.tier===selected.tier);
+  $("mergeSelectedBtn").disabled=!pair;
+}
+function renderMissions(){
+  const defs=[
+    {id:"merge10",title:"Kitchen combo",desc:"Make 10 merges total",goal:10,value:state.merges,reward:100},
+    {id:"discover8",title:"Food critic",desc:"Discover 8 different foods or mutations",goal:8,value:Object.keys(state.discovered).filter(k=>state.discovered[k]).length,reward:125},
+    {id:"earn250",title:"Big tip energy",desc:"Earn 250 coins from merges and sales",goal:250,value:state.coinsEarned,reward:150}
+  ];
+  $("missions").innerHTML=defs.map(m=>{
+    const claimed=!!state.missionsClaimed[m.id],done=m.value>=m.goal;
+    const progress=Math.min(1,m.value/m.goal);
+    return `<div class="mission"><div class="mission-top"><div class="mission-title">${claimed?"✅ ":done?"✨ ":""}${m.title}</div><div class="mission-reward">🪙 ${m.reward}</div></div><div class="mission-desc">${m.desc}</div><div class="mission-progress"><div class="progress-track"><div class="progress-fill" style="width:${progress*100}%"></div></div><span>${fmt(Math.min(m.value,m.goal))}/${fmt(m.goal)}</span>${done&&!claimed?`<button class="mission-claim" data-claim="${m.id}" data-reward="${m.reward}">CLAIM</button>`:""}</div></div>`;
+  }).join("");
+  $("missions").querySelectorAll("[data-claim]").forEach(btn=>btn.addEventListener("click",()=>{
+    const id=btn.dataset.claim;
+    if(state.missionsClaimed[id])return;
+    state.missionsClaimed[id]=true;awardCoins(Number(btn.dataset.reward));toast("Mission complete! Bonus coins claimed.","gold");renderAll();scheduleSave();
+  }));
+}
+function renderShop(){
+  const offers=[
+    {id:"starter",icon:"🥡",name:"Snack Pack",cost:35,rarity:"COMMON ROLL",desc:"A budget roll for a fresh basic food. A tiny chance of a lucky mutation."},
+    {id:"lucky",icon:"🎁",name:"Lucky Crate",cost:125,rarity:"BETTER TIER ODDS",desc:"Rolls a higher-tier food with improved odds of a shiny or better mutation."},
+    {id:"mutation",icon:"🌈",name:"Mutation Box",cost:260,rarity:"MUTATION BOOST",desc:"Guarantees a mutation: shiny, golden, rainbow or cosmic."},
+    {id:"tier",icon:"🚀",name:"Tier Jumper",cost:420,rarity:"HIGH TIER ROLL",desc:"Roll a food from tier 3 and above. Mutations are still possible."}
+  ];
+  const list=$("shopList");if(!list)return;
+  list.innerHTML=offers.map(o=>`<div class="shop-card"><div class="shop-icon">${o.icon}</div><div><strong>${o.name}</strong><p>${o.desc}</p><span class="shop-rarity">${o.rarity}</span></div><button class="shop-buy" data-shop="${o.id}" ${state.coins<o.cost||state.items.length>=40?"disabled":""}>🪙 ${fmt(o.cost)}</button></div>`).join("");
+  list.querySelectorAll("[data-shop]").forEach(btn=>btn.addEventListener("click",()=>buyShopRoll(btn.dataset.shop,btn)));
+}
+function buyShopRoll(kind,button){
+  const offers={starter:{cost:35},lucky:{cost:125},mutation:{cost:260},tier:{cost:420}};
+  const offer=offers[kind];if(!offer)return;
+  if(state.items.length>=40){toast("Board full! Merge or sell some food first.","bad");return}
+  if(state.coins<offer.cost){toast(`You need ${fmt(offer.cost-state.coins)} more coins for that roll.`,"bad");return}
+  state.coins-=offer.cost;
+  let tier=0,mutation=getMutation();
+  if(kind==="lucky"){
+    const r=Math.random();tier=r<.58?1:r<.86?2:3;
+    if(Math.random()<.18)mutation=rollBetterMutation();
+  }else if(kind==="mutation"){
+    tier=Math.random()<.72?0:1;mutation=rollBetterMutation();
+  }else if(kind==="tier"){
+    tier=2+Math.floor(Math.random()*Math.min(5,Math.max(1,foods.length-2)));
+    tier=Math.min(foods.length-1,tier);
+  }
+  const item=addRolledFood(tier,mutation);
+  if(!item){state.coins+=offer.cost;return}
+  discover(tier,mutation);state.itemsMade++;
+  const bp=boardPoint(item);burst(bp.x,bp.y,mutationMap[mutation].color,kind==="mutation"?20:12);
+  if(kind==="mutation"||kind==="tier"||mutation==="rainbow"||mutation==="cosmic")celebrate(mutation==="normal"?kind:mutation,kind==="mutation"?46:28);
+  button?.classList.add("purchased");
+  toast(`🎲 ${foods[tier].emoji} ${mutationMap[mutation].name} ${foods[tier].name}!`,mutation==="normal"?"good":"gold");
+  renderAll();scheduleSave();
+}
+function rollBetterMutation(){
+  const r=Math.random();return r<.58?"shiny":r<.84?"golden":r<.97?"rainbow":"cosmic";
+}
+function addRolledFood(tier,mutation){
+  if(state.items.length>=40)return null;
+  let x=.12+Math.random()*.76,y=.14+Math.random()*.72,tries=0;
+  while(tries<18&&state.items.some(i=>Math.hypot((i.x-x)*board.clientWidth,(i.y-y)*board.clientHeight)<75)){
+    x=.1+Math.random()*.8;y=.12+Math.random()*.74;tries++;
+  }
+  const item={id:randomId(),tier:clamp(tier,0,foods.length-1),mutation:mutationMap[mutation]?mutation:"normal",x:clamp(x,.07,.93),y:clamp(y,.1,.9)};
+  state.items.push(item);state.selectedId=item.id;state.selectedPair=[];
+  if(item.tier>state.bestTier){state.bestTier=item.tier;state.bestMutation=item.mutation;}
+  else if(item.tier===state.bestTier&&mutationMap[item.mutation].mult>mutationMap[state.bestMutation||"normal"].mult)state.bestMutation=item.mutation;
+  return item;
+}
+function localDayKey(date=new Date()){
+  return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`;
+}
+function dayBeforeKey(){const d=new Date();d.setDate(d.getDate()-1);return localDayKey(d)}
+function celebrate(kind="gold",count=30){
+  const layer=$("celebrationLayer");if(!layer)return;
+  const palette={gold:["#ffe18a","#ffbf55","#fff4c2"],rainbow:["#ff8de2","#9da7ff","#68f0c2","#ffd166"],cosmic:["#d8acff","#7dcfff","#fff0ff"],green:["#68f0c2","#a5ffe0","#e8fff6"],purple:["#d7acff","#a783ff","#f5d9ff"],wheel:["#ffda72","#a98aff","#6cecc0","#ff85b6"],red:["#ff91b0","#ffd166","#fff0f5"]};
+  const colors=palette[kind]||palette.gold;
+  layer.classList.remove("flash");void layer.offsetWidth;layer.classList.add("flash");setTimeout(()=>layer.classList.remove("flash"),600);
+  const glyphs=["✦","✧","★","✺","•","✷","+","✦"];
+  for(let i=0;i<Math.min(count,70);i++){
+    const el=document.createElement("span");el.className="celebrate-spark";el.textContent=glyphs[Math.floor(Math.random()*glyphs.length)];
+    el.style.setProperty("--sx",(Math.random()*100)+"vw");el.style.setProperty("--sy",(20+Math.random()*64)+"vh");
+    el.style.setProperty("--tx",((Math.random()-.5)*260)+"px");el.style.setProperty("--ty",(-70-Math.random()*240)+"px");
+    el.style.setProperty("--rot",((Math.random()-.5)*380)+"deg");el.style.setProperty("--ss",(10+Math.random()*22)+"px");
+    el.style.setProperty("--sc",colors[Math.floor(Math.random()*colors.length)]);el.style.setProperty("--sd",(Math.random()*.24)+"s");
+    layer.appendChild(el);setTimeout(()=>el.remove(),1650);
+  }
+}
+function featureCard(icon,title,desc,button,label,disabled=false,klass=""){
+  return `<div class="feature-row"><div class="feature-icon">${icon}</div><div class="feature-copy"><strong>${title}</strong><p>${desc}</p></div><button class="feature-button ${klass}" ${disabled?"disabled":""} data-action="${button}">${label}</button></div>`;
+}
+function renderDaily(){
+  const today=localDayKey(),claimed=state.daily.lastClaim===today;
+  const streak=claimed?state.daily.streak:state.daily.lastClaim===dayBeforeKey()?Math.min(7,state.daily.streak+1):1;
+  const reward=100+(streak-1)*25+(streak===7?250:0);
+  $("dailyContent").innerHTML=`<div class="feature-hero"><div class="feature-icon">🎁</div><h4>${claimed?"Today's gift is claimed!":"Your daily snack crate is ready"}</h4><p>${claimed?"Come back tomorrow to keep your streak going.":"Claim a coin reward every day. Seven-day streaks get a chunky bonus."}</p><div class="feature-meter"><span style="width:${(streak/7)*100}%"></span></div><p style="margin-top:7px">Streak: <b>${streak} / 7 days</b> · Reward: <b>🪙 ${fmt(reward)}</b></p></div><div class="feature-grid"><div class="feature-mini"><span>Current streak</span><strong>🔥 ${state.daily.streak||0}</strong></div><div class="feature-mini"><span>Next streak bonus</span><strong>${streak===7?"Ready!":"Day "+(streak+1)}</strong></div></div><button class="feature-button green" id="claimDaily" ${claimed?"disabled":""}>${claimed?"✓ CLAIMED TODAY":"🎁 Claim daily reward · "+fmt(reward)+" coins"}</button>`;
+  $("claimDaily")?.addEventListener("click",()=>{
+    const d=localDayKey();if(state.daily.lastClaim===d)return;
+    state.daily.streak=state.daily.lastClaim===dayBeforeKey()?Math.min(7,(state.daily.streak||0)+1):1;
+    const amount=100+(state.daily.streak-1)*25+(state.daily.streak===7?250:0);
+    state.daily.lastClaim=d;awardCoins(amount);celebrate("gold",34);toast(`Daily reward claimed! +${fmt(amount)} coins 🎁`,"gold");renderAll();scheduleSave();
+  });
+}
+function renderWheel(){
+  const used=state.wheelLast===localDayKey();
+  $("wheelContent").innerHTML=`<div class="feature-hero" style="text-align:center;background:radial-gradient(circle at 50% 18%,#be8aff2b,transparent 58%),linear-gradient(120deg,#242b46,#1a2138)"><div class="feature-icon" style="font-size:54px;animation:logoFloat 3s ease-in-out infinite">🎡</div><h4>${used?"The wheel needs a rest":"Take your daily spin!"}</h4><p>${used?"The next spin unlocks when the calendar day changes.":"Prizes include coins, bonus food and rare mutations."}</p><div class="feature-number" style="margin-top:7px;color:var(--gold)">${used?"SEE YOU TOMORROW":"1 FREE SPIN"}</div></div><button class="feature-button gold" style="width:100%;padding:13px" id="spinWheel" ${used||state.items.length>=40?"disabled":""}>🎰 ${used?"Already spun today":state.items.length>=40?"Board full — make room":"SPIN THE WHEEL"}</button><p class="muted" style="font-size:9px;text-align:center;margin:0">The result is randomly selected. One spin per day per browser save.</p>`;
+  $("spinWheel")?.addEventListener("click",()=>{
+    if(state.wheelLast===localDayKey())return;if(state.items.length>=40){toast("Board full — merge or sell food first.","bad");return}
+    state.wheelLast=localDayKey();const prize=Math.random();
+    if(prize<.48){const amount=100+Math.floor(Math.random()*151);awardCoins(amount);toast(`🎡 The wheel landed on ${fmt(amount)} coins!`,"gold");celebrate("wheel",36)}
+    else if(prize<.77){const amount=250+Math.floor(Math.random()*251);awardCoins(amount);toast(`BIG WIN! +${fmt(amount)} coins! 🪙`,"gold");celebrate("gold",48)}
+    else{
+      const tier=prize<.94?2+Math.floor(Math.random()*4):7+Math.floor(Math.random()*5);
+      const mut=prize<.94?getMutation():rollBetterMutation();const item=addRolledFood(Math.min(foods.length-1,tier),mut);
+      if(item){state.itemsMade++;discover(item.tier,mut);const bp=boardPoint(item);burst(bp.x,bp.y,mutationMap[mut].color,24);celebrate(mut==="cosmic"?"cosmic":mut==="rainbow"?"rainbow":"purple",42);toast(`WHEEL FOOD! ${foods[item.tier].emoji} ${mutationMap[mut].name} ${foods[item.tier].name}!`,"gold")}
+    }
+    renderAll();scheduleSave();
+  });
+}
+function renderAchievements(){
+  const found=Object.keys(state.discovered).filter(k=>state.discovered[k]).length;
+  const hasCosmic=Object.keys(state.discovered).some(k=>k.endsWith("-cosmic")&&state.discovered[k]);
+  const defs=[
+    {id:"merges10",icon:"🔗",title:"Combo starter",desc:"Reach 10 lifetime merges",value:state.lifetimeMerges,goal:10,reward:100},
+    {id:"merges50",icon:"⚡",title:"Merge machine",desc:"Reach 50 lifetime merges",value:state.lifetimeMerges,goal:50,reward:300},
+    {id:"discover20",icon:"📚",title:"Food collector",desc:"Discover 20 food variants",value:found,goal:20,reward:250},
+    {id:"mutation1",icon:"🌈",title:"Mutant munch",desc:"Discover your first special mutation",value:state.stats.mutations,goal:1,reward:175},
+    {id:"tier6",icon:"🍜",title:"Big appetite",desc:"Discover a tier 6 or higher food",value:state.bestTier+1,goal:6,reward:400},
+    {id:"cosmic",icon:"🌌",title:"Beyond the kitchen",desc:"Discover any Cosmic food",value:hasCosmic?1:0,goal:1,reward:750}
+  ];
+  $("achievementsContent").innerHTML=`<div class="feature-hero"><div class="feature-icon">🏆</div><h4>Your kitchen trophies</h4><p>Milestones are permanent. Claim each prize once and watch your collection grow.</p><div class="feature-tag">${defs.filter(d=>d.value>=d.goal).length} / ${defs.length} milestones ready or complete</div></div>`+defs.map(d=>{
+    const done=d.value>=d.goal,claimed=!!state.achievementsClaimed[d.id],pct=Math.min(100,d.value/d.goal*100);
+    return `<div class="feature-row ${claimed?"feature-complete":""}"><div class="feature-icon">${claimed?"✅":d.icon}</div><div class="feature-copy"><strong>${d.title}</strong><p>${d.desc}</p><div class="feature-meter"><span style="width:${pct}%"></span></div><span class="feature-tag">${claimed?"Claimed":done?"Ready to claim":`${fmt(d.value)} / ${fmt(d.goal)}`} · 🪙 ${d.reward}</span></div><button class="feature-button green" data-achievement="${d.id}" ${!done||claimed?"disabled":""}>${claimed?"DONE":"CLAIM"}</button></div>`;
+  }).join("");
+  $("achievementsContent").querySelectorAll("[data-achievement]").forEach(btn=>btn.addEventListener("click",()=>{
+    const d=defs.find(a=>a.id===btn.dataset.achievement);if(!d||state.achievementsClaimed[d.id]||d.value<d.goal)return;
+    state.achievementsClaimed[d.id]=true;awardCoins(d.reward);celebrate("gold",30);toast(`Achievement claimed: ${d.title}! +${d.reward} coins`,"gold");renderAll();scheduleSave();
+  }));
+}
+function renderRebirth(){
+  const cost=1500*(state.rebirths+1),ready=state.lifetimeMerges>=25&&state.coins>=cost;
+  $("rebirthContent").innerHTML=`<div class="feature-hero"><div class="feature-icon" style="font-size:42px">🔁</div><h4>Kitchen Prestige ${state.rebirths}</h4><p>Start a fresh run in exchange for a permanent +20% coin reward multiplier per rebirth. Your food index and lifetime stats stay with you.</p><div class="feature-grid" style="margin-top:12px"><div class="feature-mini"><span>Permanent coin bonus</span><strong>+${state.rebirths*20}%</strong></div><div class="feature-mini"><span>Next rebirth cost</span><strong>🪙 ${fmt(cost)}</strong></div></div></div><div class="feature-row"><div class="feature-icon">🧹</div><div class="feature-copy"><strong>What resets?</strong><p>Current coins, board foods, regular upgrades, research and helper levels. Your discoveries, daily streak, achievements, recipes and lifetime merge count stay.</p></div></div><div class="feature-row"><div class="feature-icon">📈</div><div class="feature-copy"><strong>Requirements</strong><p>${state.lifetimeMerges>=25?"✅":"⬜"} 25 lifetime merges · ${state.coins>=cost?"✅":"⬜"} ${fmt(cost)} coins</p></div></div><button class="feature-button" id="doRebirth" style="width:100%;padding:13px" ${ready?"":"disabled"}>🔁 REBIRTH · ${fmt(cost)} coins</button>`;
+  $("doRebirth")?.addEventListener("click",()=>{
+    const need=1500*(state.rebirths+1);if(state.lifetimeMerges<25||state.coins<need)return;
+    if(!confirm(`Rebirth your kitchen? You'll lose current coins (${fmt(state.coins)}), board foods, and standard upgrades, but gain a permanent +20% coin multiplier.`))return;
+    state.rebirths++;state.coins=0;state.items=[];state.selectedId=null;state.selectedPair=[];state.upgrades={luck:0,earnings:0,skip:0,auto:0};state.researchLevel=0;state.helperLevel=0;state.merges=0;
+    [[.18,.27],[.38,.24],[.59,.27],[.78,.24],[.29,.48],[.67,.49]].forEach((p)=>state.items.push({id:randomId(),tier:0,mutation:"normal",x:p[0],y:p[1]}));state.itemsMade+=6;
+    startAutoDrop();startHelperIncome();celebrate("purple",60);toast(`Kitchen reborn! Permanent coin bonus is now +${state.rebirths*20}%.`,"gold");renderAll();scheduleSave();
+  });
+}
+function mutationRank(id){return ["normal","shiny","golden","rainbow","cosmic"].indexOf(id)}
+function renderMutationLab(){
+  const item=itemById(state.selectedId);const next= item?mutationRank(item.mutation)+1:0;const nextId=["normal","shiny","golden","rainbow","cosmic"][next]||"cosmic";
+  const cost=item?Math.round(40*(item.tier+1)*Math.pow(2.1,Math.max(0,next-1))):0;
+  $("mutationLabContent").innerHTML=`<div class="feature-hero"><div class="feature-icon">🧪</div><h4>Mutation infusion</h4><p>Infuse the currently selected food to the next mutation rank. Its tier stays the same, and the effect applies to sell value.</p></div>${item?`<div class="feature-row"><div class="feature-icon" style="font-size:28px">${foods[item.tier].emoji}</div><div class="feature-copy"><strong>${mutationMap[item.mutation].name} ${foods[item.tier].name}</strong><p>Tier ${item.tier+1} · Current sell value: 🪙 ${fmt(itemValue(item))}</p><span class="feature-tag">${next>4?"Maximum mutation reached":`Next: ${mutationMap[nextId].name} · Cost ${fmt(cost)} coins`}</span></div></div>`:`<div class="feature-row"><div class="feature-icon">👆</div><div class="feature-copy"><strong>No food selected</strong><p>Tap a food on the board first, then come back here to infuse it.</p></div></div>`}<button class="feature-button" id="infuseFood" style="width:100%;padding:13px" ${!item||next>4||state.coins<cost?"disabled":""}>🧬 ${!item?"Select a food":next>4?"MAXIMUM MUTATION":`Infuse to ${mutationMap[nextId].name} · ${fmt(cost)} coins`}</button><p class="muted" style="font-size:9px;margin:0">Infusion guarantees the next mutation rank. Cosmic is the top rank.</p>`;
+  $("infuseFood")?.addEventListener("click",()=>{
+    const current=itemById(state.selectedId);if(!current)return;const rank=mutationRank(current.mutation),target=rank+1;if(target>4)return;
+    const price=Math.round(40*(current.tier+1)*Math.pow(2.1,Math.max(0,target-1)));if(state.coins<price){toast(`You need ${fmt(price-state.coins)} more coins.`,"bad");return}
+    state.coins-=price;current.mutation=["normal","shiny","golden","rainbow","cosmic"][target];discover(current.tier,current.mutation);
+    if(current.tier===state.bestTier&&mutationMap[current.mutation].mult>(mutationMap[state.bestMutation||"normal"].mult||1))state.bestMutation=current.mutation;
+    const bp=boardPoint(current);burst(bp.x,bp.y,mutationMap[current.mutation].color,28);celebrate(current.mutation==="cosmic"?"cosmic":current.mutation==="rainbow"?"rainbow":"purple",38);toast(`Infusion success! ${mutationMap[current.mutation].name} ${foods[current.tier].name}!`,"gold");renderAll();scheduleSave();
+  });
+}
+function renderMarket(){
+  const commonItems=state.items.filter(i=>i.tier<=1&&i.mutation==="normal");
+  const commons=commonItems.length;
+  const sellCount=Math.min(commons,Math.max(0,state.items.length-1));
+  const estimated=commonItems.slice(0,sellCount).reduce((sum,i)=>sum+itemValue(i),0);
+  $("marketContent").innerHTML=`<div class="feature-hero"><div class="feature-icon">💸</div><h4>Fresh food, fresh coins</h4><p>Quick-sell common Tier 1–2 foods to make space for your better rolls. The last food on your board is always protected.</p><div class="feature-grid" style="margin-top:12px"><div class="feature-mini"><span>Common items</span><strong>${commons}</strong></div><div class="feature-mini"><span>Estimated payout</span><strong>🪙 ${fmt(estimated)}</strong></div></div></div><button class="feature-button gold" id="sellCommons" style="width:100%;padding:13px" ${commons===0||state.items.length<=1?"disabled":""}>💰 SELL COMMONS · +${fmt(Math.min(estimated,state.items.length>1?estimated:0))}</button><div class="feature-row"><div class="feature-icon">🧾</div><div class="feature-copy"><strong>Market ledger</strong><p>Foods sold: ${fmt(state.stats.sold)} · Current inventory: ${state.items.length} / 40</p></div><button class="feature-button" id="sellSelectedMarket" ${!itemById(state.selectedId)?"disabled":""}>Sell selected</button></div>`;
+  $("sellCommons")?.addEventListener("click",()=>{
+    const candidates=state.items.filter(i=>i.tier<=1&&i.mutation==="normal");const count=Math.min(candidates.length,Math.max(0,state.items.length-1));
+    if(!count){toast("Keep at least one food on the board!","bad");return}
+    const sold=candidates.slice(0,count),ids=new Set(sold.map(i=>i.id)),total=sold.reduce((sum,i)=>sum+itemValue(i),0);
+    state.items=state.items.filter(i=>!ids.has(i.id));if(ids.has(state.selectedId))state.selectedId=null;state.stats.sold+=sold.length;awardCoins(total);celebrate("gold",22);toast(`Market sale: ${sold.length} common foods sold for ${fmt(total)} coins!`,"gold");renderAll();scheduleSave();
+  });
+  $("sellSelectedMarket")?.addEventListener("click",sellSelected);
+}
+function renderResearch(){
+  const level=state.researchLevel||0,cost=Math.floor(120*Math.pow(1.75,level));
+  $("researchContent").innerHTML=`<div class="feature-hero"><div class="feature-icon">🔬</div><h4>Mutation probability research</h4><p>Invest coins into permanent lab research. Each level multiplies your base mutation odds by another 10%. The bonus stacks with Lucky Seasoning.</p><div class="feature-grid" style="margin-top:12px"><div class="feature-mini"><span>Research level</span><strong>${level} / 10</strong></div><div class="feature-mini"><span>Research bonus</span><strong>+${level*10}%</strong></div></div><div class="feature-meter"><span style="width:${level*10}%"></span></div></div><button class="feature-button" id="buyResearch" style="width:100%;padding:13px" ${level>=10||state.coins<cost?"disabled":""}>🔬 ${level>=10?"MAX RESEARCH":`Upgrade research · ${fmt(cost)} coins`}</button><div class="feature-row"><div class="feature-icon">📊</div><div class="feature-copy"><strong>Current combined luck</strong><p>${Math.round(((1+state.upgrades.luck*.2+level*.1+state.rebirths*.05)-1)*100)}% added luck from upgrades, research and rebirth.</p></div></div>`;
+  $("buyResearch")?.addEventListener("click",()=>{
+    const l=state.researchLevel||0,price=Math.floor(120*Math.pow(1.75,l));if(l>=10||state.coins<price)return;state.coins-=price;state.researchLevel=l+1;celebrate("purple",18);toast(`Research upgraded to level ${state.researchLevel}! Mutation odds improved.`,"good");renderAll();scheduleSave();
+  });
+}
+function renderEvents(){
+  const used=state.eventLast===localDayKey();
+  const now=Date.now(),rushActive=now<(Number(state.rainbowRushUntil)||0),rushCooldown=now<(Number(state.rainbowRushCooldownUntil)||0);
+  const rushText=rushActive?`ACTIVE · ${Math.ceil((state.rainbowRushUntil-now)/1000)}s left`:rushCooldown?`READY IN ${Math.ceil((state.rainbowRushCooldownUntil-now)/1000)}s`:'READY TO START';
+  const rushButton=rushActive?'🌈 RAINBOW RUSH ACTIVE':rushCooldown?'⏳ RUSH RECHARGING':'🌈 Start 90-second Rainbow Rush';
+  const rushDisabled=rushActive||rushCooldown?'disabled':'';
+  $("eventsContent").innerHTML=`<div class="feature-hero" style="background:radial-gradient(ellipse at 100% 0%,#ff709d27,transparent 54%),linear-gradient(120deg,#242b46,#1a2138)"><div class="feature-icon">🎉</div><h4>Daily kitchen drop</h4><p>A free event food with boosted mutation odds. Your event reward refreshes on the next local calendar day.</p><div class="feature-tag">${used?"Today's event collected":"Limited daily reward"}</div></div><div class="feature-row"><div class="feature-icon">🎁</div><div class="feature-copy"><strong>Festival crate</strong><p>Includes a Tier 3–7 food and a 40% chance for a rare mutation, plus 100 coins.</p></div></div><button class="feature-button gold" id="claimEvent" style="width:100%;padding:13px" ${used||state.items.length>=40?"disabled":""}>${used?"✓ EVENT CLAIMED":"🎉 Claim festival crate"}</button><div class="feature-hero rainbow-rush-card"><div class="feature-icon">🌈</div><h4>Rainbow Rush</h4><p>Activate a 90-second event. Every merge pays double coins while the rainbow timer is active. The rush recharges after 5 minutes.</p><div class="feature-tag" id="rainbowRushStatus">${rushText}</div><button class="feature-button" id="startRainbowRush" style="width:100%;padding:13px;margin-top:10px" ${rushDisabled}>${rushButton}</button></div>`;
+  $("claimEvent")?.addEventListener("click",()=>{
+    if(state.eventLast===localDayKey()||state.items.length>=40)return;state.eventLast=localDayKey();const tier=Math.min(foods.length-1,2+Math.floor(Math.random()*5));const mut=Math.random()<.4?rollBetterMutation():getMutation();const item=addRolledFood(tier,mut);
+    if(!item)return;state.itemsMade++;discover(tier,mut);awardCoins(100);const bp=boardPoint(item);burst(bp.x,bp.y,mutationMap[mut].color,28);celebrate(mut==="cosmic"?"cosmic":mut==="rainbow"?"rainbow":"red",42);toast(`Festival crate opened! ${foods[tier].emoji} ${mutationMap[mut].name} ${foods[tier].name}!`,"gold");renderAll();scheduleSave();
+  });
+  $("startRainbowRush")?.addEventListener("click",()=>{
+    const t=Date.now();if(t<(Number(state.rainbowRushUntil)||0)||t<(Number(state.rainbowRushCooldownUntil)||0))return;
+    state.rainbowRushUntil=t+90000;state.rainbowRushCooldownUntil=t+300000;
+    celebrate("rainbow",55);toast("🌈 RAINBOW RUSH! Merge rewards are doubled for 90 seconds!","gold");renderAll();scheduleSave();
+  });
+}
+function renderRecipes(){
+  const defs=[{id:"waffle",tier:3,title:"Sweet beginnings",desc:"Reach tier 4 (Donut) or higher",reward:100},{id:"golden",tier:6,title:"Gourmet chef",desc:"Reach Pizza's higher-tier relatives (tier 7+)",reward:250},{id:"galaxy",tier:11,title:"Out-of-this-world",desc:"Reach tier 12",reward:500},{id:"infinity",tier:16,title:"Infinite appetite",desc:"Reach tier 17",reward:1000},{id:"multiverse",tier:39,title:"Multiverse chef",desc:"Discover the Tier 40 Multiverse Feast",reward:2500},{id:"stardust",tier:49,title:"Stardust chef",desc:"Reach the Tier 50 Stardust Soup",reward:7000},{id:"crown",tier:59,title:"Crown of the kitchen",desc:"Reach the Tier 60 Multiverse Mega Feast",reward:25000}];
+  $("recipesContent").innerHTML=`<div class="feature-hero"><div class="feature-icon">📖</div><h4>Recipe milestones</h4><p>Unlock rewards by discovering higher and higher food tiers. These are one-time rewards, not merge animations.</p><div class="feature-tag">Best tier: ${state.bestTier+1} / ${foods.length}</div></div>`+defs.map(d=>{
+    const done=state.bestTier>=d.tier,claimed=!!state.recipesClaimed[d.id];return `<div class="feature-row ${claimed?"feature-complete":""}"><div class="feature-icon">${claimed?"✅":foods[d.tier].emoji}</div><div class="feature-copy"><strong>${d.title}</strong><p>${d.desc}</p><span class="feature-tag">${claimed?"Claimed":done?"Unlocked":"Locked"} · 🪙 ${d.reward}</span></div><button class="feature-button green" data-recipe="${d.id}" ${!done||claimed?"disabled":""}>${claimed?"DONE":"CLAIM"}</button></div>`;
+  }).join("");
+  $("recipesContent").querySelectorAll("[data-recipe]").forEach(btn=>btn.addEventListener("click",()=>{
+    const d=defs.find(x=>x.id===btn.dataset.recipe);if(!d||state.recipesClaimed[d.id]||state.bestTier<d.tier)return;state.recipesClaimed[d.id]=true;awardCoins(d.reward);celebrate("gold",32);toast(`Recipe milestone claimed! +${d.reward} coins.`,"gold");renderAll();scheduleSave();
+  }));
+}
+function renderHelpers(){
+  const level=state.helperLevel||0,cost=Math.floor(300*Math.pow(1.8,level)),income=level*(level+1)*2;
+  const mergeCost=1800,autoUnlocked=!!state.autoMergeUnlocked,autoOn=!!state.autoMergeEnabled;
+  $("helpersContent").innerHTML=`<div class="feature-hero"><div class="feature-icon" style="font-size:42px">🤖</div><h4>Your kitchen crew</h4><p>Hire little helpers who collect passive tips while the game is open. No merge effects are added.</p><div class="feature-grid" style="margin-top:12px"><div class="feature-mini"><span>Helper level</span><strong>${level} / 5</strong></div><div class="feature-mini"><span>Passive tips</span><strong>+${income} / 10s</strong></div></div><div class="feature-meter"><span style="width:${level*20}%"></span></div></div><button class="feature-button green" id="hireHelper" style="width:100%;padding:13px" ${level>=5||state.coins<cost?"disabled":""}>🤖 ${level>=5?"CREW MAXED":`Hire next helper · ${fmt(cost)} coins`}</button><div class="feature-row"><div class="feature-icon">⏱️</div><div class="feature-copy"><strong>Working in the background</strong><p>Level ${level} crew earns ${income} coins each 10 seconds while the page is open.</p></div></div><div class="feature-hero"><div class="feature-icon">🧲</div><h4>Auto-merger</h4><p>Automatically merges one matching pair every 15 seconds. It uses your current luck, mutation odds, and merge rewards.</p><div class="feature-tag">${autoUnlocked?(autoOn?"AUTO-MERGE ACTIVE":"UNLOCKED · PAUSED"):"ONE-TIME UNLOCK · 1,800 COINS"}</div></div><div class="admin-actions" style="display:flex;gap:10px"><button class="feature-button green" id="unlockAutoMerge" style="flex:1" ${autoUnlocked||state.coins<mergeCost?"disabled":""}>${autoUnlocked?"✓ Auto-merger unlocked":`Unlock · ${fmt(mergeCost)} coins`}</button><button class="feature-button" id="toggleAutoMerge" style="flex:1" ${!autoUnlocked?"disabled":""}>${autoOn?"Pause Auto-merger":"Start Auto-merger"}</button></div>`;
+  $("hireHelper")?.addEventListener("click",()=>{
+    const l=state.helperLevel||0,price=Math.floor(300*Math.pow(1.8,l));if(l>=5||state.coins<price)return;state.coins-=price;state.helperLevel=l+1;celebrate("green",20);toast(`Helper hired! Crew is now level ${state.helperLevel}.`,"good");startHelperIncome();renderAll();scheduleSave();
+  });
+  $("unlockAutoMerge")?.addEventListener("click",()=>{
+    if(state.autoMergeUnlocked||state.coins<mergeCost)return;state.coins-=mergeCost;state.autoMergeUnlocked=true;state.autoMergeEnabled=true;state.autoMergeLastAt=Date.now();toast("Auto-merger unlocked and switched on! It will merge a pair every 15 seconds.","gold");celebrate("rainbow",24);renderAll();scheduleSave();
+  });
+  $("toggleAutoMerge")?.addEventListener("click",()=>{
+    if(!state.autoMergeUnlocked)return;state.autoMergeEnabled=!state.autoMergeEnabled;state.autoMergeLastAt=Date.now();toast(state.autoMergeEnabled?"Auto-merger started.":"Auto-merger paused.","good");renderAll();scheduleSave();
+  });
+}
+function renderPowerups(){
+  const active=Date.now()<(Number(state.luckyLadleUntil)||0);
+  const left=active?Math.ceil((state.luckyLadleUntil-Date.now())/1000):0;
+  const selected=itemById(state.selectedId),rank=selected?mutationRank(selected.mutation):-1;
+  const powers=[
+    {id:"coin-pop",icon:"🪙",title:"Coin Pop",desc:"Instantly collect 350 coins.",cost:150,button:"Collect 350 coins"},
+    {id:"lucky-ladle",icon:"🥄",title:"Lucky Ladle",desc:active?`5× mutation luck is active for ${left}s.`:"Multiply mutation odds by 5 for two minutes.",cost:300,button:active?"Luck boost active":"Activate 2-minute luck"},
+    {id:"tier-hopper",icon:"🌀",title:"Tier Hopper",desc:"Spawn a food up to three tiers above your current best, with a guaranteed rare mutation.",cost:280,button:"Spawn boosted food"},
+    {id:"mutation-mist",icon:"🌫️",title:"Mutation Mist",desc:selected?`Upgrade ${foods[selected.tier].name} from ${mutationMap[selected.mutation].name} to the next mutation for free.`:"Select a food on the kitchen board first.",cost:250,button:"Upgrade selected mutation",disabled:!selected||rank>=4},
+    {id:"kitchen-vacuum",icon:"🧹",title:"Kitchen Vacuum",desc:"Sell up to five lowest-tier normal foods while keeping at least one item.",cost:400,button:"Sell up to 5 common foods"},
+    {id:"pair-magnet",icon:"🧲",title:"Pair Magnet",desc:"Instantly merge the first matching pair on your board. No pair? Your coins are refunded.",cost:220,button:"Merge a matching pair"},
+    {id:"mutation-reroll",icon:"🎲",title:"Mutation Reroll",desc:"Roll a fresh mutation for your selected food. It can improve or downgrade, so choose carefully.",cost:180,button:"Reroll selected mutation",disabled:!selected}
+  ];
+  $("powerupsContent").innerHTML=`<div class="feature-hero"><div class="feature-icon" style="font-size:46px">🪄</div><h4>Kitchen power-ups</h4><p>Spend coins on one-shot boosts. Each successful use is saved automatically. Your selected food is used by Mutation Mist.</p><div class="feature-grid"><div class="feature-mini"><span>Mutation boost</span><strong>${active?`ACTIVE · ${left}s`:"Ready to buy"}</strong></div><div class="feature-mini"><span>Power-ups used</span><strong>${fmt(state.stats.powerupsUsed||0)}</strong></div></div></div>`+powers.map(p=>`<div class="feature-row"><div class="feature-icon">${p.icon}</div><div class="feature-copy"><strong>${p.title}</strong><p>${p.desc}</p><span class="feature-tag">${p.id==="lucky-ladle"&&active?"ACTIVE":`Cost · ${fmt(p.cost)} coins`}</span></div><button class="feature-button" data-powerup="${p.id}" ${p.disabled||state.coins<p.cost||(p.id==="lucky-ladle"&&active)?"disabled":""}>${p.button}</button></div>`).join("");
+  $("powerupsContent").querySelectorAll("[data-powerup]").forEach(b=>b.addEventListener("click",()=>usePowerup(b.dataset.powerup)));
+}
+function usePowerup(id){
+  const prices={"coin-pop":150,"lucky-ladle":300,"tier-hopper":280,"mutation-mist":250,"kitchen-vacuum":400,"pair-magnet":220,"mutation-reroll":180};
+  const price=prices[id];if(!price||state.coins<price){toast("Not enough coins for that power-up.","bad");return}
+  if(id==="lucky-ladle"&&Date.now()<(Number(state.luckyLadleUntil)||0)){toast("Lucky Ladle is already active.","bad");return}
+  if(["tier-hopper"].includes(id)&&state.items.length>=40){toast("Board full! Make room first.","bad");return}
+  if(id==="pair-magnet"&&!state.items.some((a,i)=>state.items.slice(i+1).some(b=>b.tier===a.tier))){toast("No matching pair found. Your coins were not spent.","bad");return}
+  if(id==="mutation-reroll"&&!itemById(state.selectedId)){toast("Select a food on the Kitchen tab first.","bad");return}
+  if(id==="mutation-mist"){
+    const item=itemById(state.selectedId);if(!item){toast("Select a food on the Kitchen tab first.","bad");return}
+    const r=mutationRank(item.mutation);if(r>=4){toast("That food already has the maximum mutation.","bad");return}
+  }
+  state.coins-=price;state.stats.powerupsUsed=(Number(state.stats.powerupsUsed)||0)+1;
+  if(id==="coin-pop"){
+    awardCoins(350);celebrate("gold",24);toast("Coin Pop! +350 coins.","gold");
+  }else if(id==="lucky-ladle"){
+    state.luckyLadleUntil=Date.now()+120000;celebrate("rainbow",30);toast("Lucky Ladle active: 5× mutation odds for 2 minutes!","gold");
+  }else if(id==="tier-hopper"){
+    const tier=Math.min(foods.length-1,Math.max(2,(state.bestTier||0)+3));const mut=rollBetterMutation();const item=addRolledFood(tier,mut);
+    if(!item){state.coins+=price;state.stats.powerupsUsed--;toast("The board is full.","bad");return}
+    state.itemsMade++;discover(tier,mut);const bp=boardPoint(item);burst(bp.x,bp.y,mutationMap[mut].color,30);celebrate(mut==="cosmic"?"cosmic":"rainbow",30);toast(`Tier Hopper spawned ${mutationMap[mut].name} ${foods[tier].name}!`,"gold");
+  }else if(id==="mutation-mist"){
+    const item=itemById(state.selectedId),r=mutationRank(item.mutation);item.mutation=["normal","shiny","golden","rainbow","cosmic"][r+1];discover(item.tier,item.mutation);const bp=boardPoint(item);burst(bp.x,bp.y,mutationMap[item.mutation].color,24);celebrate(item.mutation==="cosmic"?"cosmic":"rainbow",28);toast(`${foods[item.tier].name} upgraded to ${mutationMap[item.mutation].name}!`,"gold");
+  }else if(id==="pair-magnet"){
+    let pair=null;for(let i=0;i<state.items.length&&!pair;i++)for(let j=i+1;j<state.items.length;j++)if(state.items[i].tier===state.items[j].tier){pair=[state.items[i],state.items[j]];break;}
+    if(!pair){state.coins+=price;state.stats.powerupsUsed--;toast("No matching pair found. Refunded.","bad");return}
+    mergeItems(pair[0].id,pair[1].id);toast("Pair Magnet found a match!","gold");
+  }else if(id==="mutation-reroll"){
+    const item=itemById(state.selectedId),old=item.mutation;item.mutation=rollMutation();discover(item.tier,item.mutation);const bp=boardPoint(item);burst(bp.x,bp.y,mutationMap[item.mutation].color,24);toast(`${foods[item.tier].name}: ${mutationMap[old].name} → ${mutationMap[item.mutation].name}!`,"gold");
+  }else if(id==="kitchen-vacuum"){
+    const candidates=state.items.filter(i=>i.tier<=1&&i.mutation==="normal").sort((a,b)=>a.tier-b.tier);const count=Math.min(5,candidates.length,Math.max(0,state.items.length-1));const sold=candidates.slice(0,count);
+    if(!sold.length){state.coins+=price;state.stats.powerupsUsed--;toast("No common foods to vacuum up. Your coins were refunded.","bad");return}
+    const ids=new Set(sold.map(i=>i.id)),total=sold.reduce((sum,i)=>sum+itemValue(i),0);state.items=state.items.filter(i=>!ids.has(i.id));if(ids.has(state.selectedId))state.selectedId=null;state.stats.sold+=sold.length;awardCoins(total);celebrate("gold",20);toast(`Vacuumed ${sold.length} foods for ${fmt(total)} coins!`,"gold");
+  }
+  renderAll();scheduleSave();
+}
+function startHelperIncome(){
+  if(helperInterval){clearInterval(helperInterval);helperInterval=null}if(!(state.helperLevel>0))return;
+  helperInterval=setInterval(()=>{
+    if(!state.helperLevel||document.hidden)return;const amount=state.helperLevel*(state.helperLevel+1)*2;
+    state.coins+=amount;state.coinsEarned+=amount;state.lifetimeCoins+=amount;renderAll();scheduleSave();
+  },10000);
+}
+function renderQuestBoard(){
+ const goals=[{id:"merge10",label:"Merge 10 foods",desc:"Lifetime merges",progress:Math.min(10,state.lifetimeMerges||0),target:10,reward:180},{id:"findRare",label:"Find a rare mutation",desc:"Discover Shiny, Golden, Rainbow or Cosmic",progress:Object.keys(state.discovered||{}).some(k=>!k.endsWith("-normal"))?1:0,target:1,reward:220},{id:"tier5",label:"Create a tier 6 food",desc:"Best food tier",progress:Math.min(6,state.bestTier||0),target:6,reward:300}];
+ $("questsPlusContent").innerHTML='<div class="feature-hero"><div class="feature-icon">🗒️</div><h4>Bonus quest board</h4><p>Complete these one-time challenges for extra coins.</p></div>'+goals.map(g=>{const done=g.progress>=g.target,claimed=!!state.questsPlusClaimed[g.id];return `<div class="feature-row"><div class="feature-icon">${done?'✅':'🎯'}</div><div class="feature-copy"><strong>${g.label}</strong><p>${g.desc} · ${g.progress}/${g.target}</p><div class="feature-meter"><span style="width:${g.progress/g.target*100}%"></span></div><button class="feature-button ${done?'green':''}" data-quest="${g.id}" ${!done||claimed?'disabled':''}>${claimed?'✓ CLAIMED':done?`Claim ${g.reward} coins`:`Reward · ${g.reward} coins`}</button></div></div>`}).join('');
+ $("questsPlusContent").querySelectorAll('[data-quest]').forEach(b=>b.addEventListener('click',()=>{const g=goals.find(x=>x.id===b.dataset.quest);if(!g||state.questsPlusClaimed[g.id]||g.progress<g.target)return;state.questsPlusClaimed[g.id]=true;awardCoins(g.reward);celebrate('gold',26);toast(`Quest complete! +${g.reward} coins`,'gold');renderAll();scheduleSave()}));
+}
+function renderExpedition(){
+  const used=state.expeditionLast===localDayKey();
+  $("expeditionContent").innerHTML=`<div class="feature-hero"><div class="feature-icon" style="font-size:44px">🧭</div><h4>Send out a snack scout</h4><p>Once per day, dispatch a tiny food expedition. Your scout returns with coins and a chance to discover a rare mutation.</p><div class="feature-grid"><div class="feature-mini"><span>Possible haul</span><strong>250–700 coins</strong></div><div class="feature-mini"><span>Rare chance</span><strong>25%</strong></div></div></div><button class="feature-button green" id="sendExpedition" style="width:100%;padding:13px" ${used?'disabled':''}>${used?'✓ Scout already returned today':'🧭 Send expedition'}</button>`;
+  $("sendExpedition")?.addEventListener("click",()=>{
+    if(state.expeditionLast===localDayKey())return;
+    state.expeditionLast=localDayKey();
+    const amount=250+Math.floor(Math.random()*451);
+    awardCoins(amount);
+    let rare=false;
+    if(state.items.length<40&&Math.random()<.25){
+      const tier=Math.min(foods.length-1,Math.max(2,state.bestTier||0));
+      const mut=rollBetterMutation();
+      const prize=addRolledFood(tier,mut);
+      if(prize){
+        state.itemsMade++;
+        discover(tier,mut);
+        if(tier>state.bestTier){state.bestTier=tier;state.bestMutation=mut;}
+        else if(tier===state.bestTier&&mutationMap[mut].mult>(mutationMap[state.bestMutation||"normal"].mult||1))state.bestMutation=mut;
+        const bp=boardPoint(prize);burst(bp.x,bp.y,mutationMap[mut].color,24);rare=true;
+      }
+    }
+    celebrate(rare?"purple":"green",rare?42:25);
+    toast(`Expedition returned with ${fmt(amount)} coins${rare?' and a rare food!':'!'}`,rare?"gold":"good");
+    renderAll();scheduleSave();
+  });
+}
+function renderShowcase(){const best=[...state.items].sort((a,b)=>b.tier-a.tier)[0];const discovered=Object.keys(state.discovered||{}).length;$("showcaseContent").innerHTML=`<div class="feature-hero" style="text-align:center;background:radial-gradient(circle at 50% 15%,#ffdc8525,transparent 60%),linear-gradient(120deg,#242b46,#1a2138)"><div class="feature-icon" style="font-size:58px">${best?foods[best.tier].emoji:'🍽️'}</div><h4>${best?foods[best.tier].name:'Your kitchen is waiting'}</h4><p>Your current board's highest-tier food. Keep merging to make the showcase even more legendary.</p><div class="feature-grid"><div class="feature-mini"><span>Best tier</span><strong>${best?best.tier+1:1}</strong></div><div class="feature-mini"><span>Discoveries</span><strong>${discovered}/${totalIndex}</strong></div><div class="feature-mini"><span>Lifetime merges</span><strong>${fmt(state.lifetimeMerges||0)}</strong></div></div></div><button class="feature-button" id="celebrateShowcase" style="width:100%;padding:13px">🌟 Celebrate my collection</button>`;$("celebrateShowcase")?.addEventListener('click',()=>{celebrate('purple',45);toast('Your food collection is looking delicious! 🌟','gold')})}
+function renderNewTabs(){renderDaily();renderWheel();renderAchievements();renderRebirth();renderMutationLab();renderMarket();renderResearch();renderEvents();renderRecipes();renderHelpers();renderPowerups();renderQuestBoard();renderExpedition();renderShowcase()}
+
+function specialFoodMutation(){const r=Math.random();return r<.1?"cosmic":r<.4?"rainbow":r<.78?"golden":"shiny"}
+function showSpecialReveal(item){
+  const node=$("specialReveal");if(!node||!item)return;
+  const food=foods[item.tier],mutation=mutationMap[item.mutation];
+  node.hidden=false;node.innerHTML=`<div class="reveal-backdrop"></div><div class="reveal-rays"></div><div class="reveal-card"><div class="reveal-kicker">✦ EVERY-MINUTE MYSTERY DROP ✦</div><div class="reveal-ring"><span class="reveal-emoji">${food.emoji}</span></div><div class="reveal-title">${mutation.name} ${food.name}</div><div class="reveal-meta">TIER ${item.tier+1} · ×${mutation.mult} VALUE</div><div class="reveal-tag">BONUS FOOD DISCOVERED</div></div>`;
+  node.classList.remove("reveal-playing");void node.offsetWidth;node.classList.add("reveal-playing");
+  const hide=()=>{node.classList.remove("reveal-playing");node.hidden=true;node.innerHTML=""};
+  clearTimeout(node._hideTimer);node._hideTimer=setTimeout(hide,3000);
+}
+function spawnMinuteMysteryFood(){
+  if(state.items.length>=40){state.specialDropQueued=Math.min(10,(Number(state.specialDropQueued)||0)+1);toast("🌟 Special food is ready! Merge or sell to make room.","gold");updateTimedUI();scheduleSave();return false;}
+  const tier=Math.min(foods.length-1,Math.max(4,(Number(state.bestTier)||0)+(Math.random()<.28?2:1)));
+  const mut=specialFoodMutation();const item=addRolledFood(tier,mut);if(!item)return false;
+  state.itemsMade++;state.specialDropsClaimed=(Number(state.specialDropsClaimed)||0)+1;state.stats.specialDrops=(Number(state.stats.specialDrops)||0)+1;discover(tier,mut);
+  // Bring the kitchen into view so the reveal happens directly above the merge board.
+  const nav=document.querySelector('.side-tab[data-panel="kitchenPanel"]');if(nav&&$("workspace")?.dataset.view!=="kitchen")nav.click();
+  renderAll();const bp=boardPoint(item);burst(bp.x,bp.y,mutationMap[mut].color,mut==="cosmic"?44:34);celebrate(mut==="cosmic"?"cosmic":"rainbow",mut==="cosmic"?70:56);showSpecialReveal(item);
+  toast(`🌟 EVERY-MINUTE DROP: ${mutationMap[mut].name} ${foods[tier].name}!`,"gold");scheduleSave();return true;
+}
+function autoMergeTick(now){
+  if(!state.autoMergeUnlocked||!state.autoMergeEnabled||now-(Number(state.autoMergeLastAt)||0)<15000)return;
+  state.autoMergeLastAt=now;
+  const buckets=new Map();for(const item of state.items){if(!buckets.has(item.tier))buckets.set(item.tier,[]);buckets.get(item.tier).push(item)}
+  for(const pair of buckets.values())if(pair.length>=2){state.stats.autoMerges=(Number(state.stats.autoMerges)||0)+1;mergeItems(pair[0].id,pair[1].id);return;}
+  updateTimedUI();
+}
+function updateTimedUI(){
+  if(!state)return;const now=Date.now();
+  const status=$("specialDropStatus"),timer=$("specialDropTimer");
+  if(status&&timer){const queued=Number(state.specialDropQueued)||0;const remaining=Math.max(0,(Number(state.specialDropNextAt)||now+60000)-now);const sec=Math.ceil(remaining/1000);status.classList.toggle("ready",queued>0);timer.textContent=queued>0?`READY ×${queued}`:`${String(Math.floor(sec/60)).padStart(2,"0")}:${String(sec%60).padStart(2,"0")}`;status.title=queued>0?"A special food is waiting for space on your board.":"A guaranteed rare food spawns when this timer reaches zero.";}
+  const combo=$("comboBoardValue"),comboSub=$("comboBoardSub");if(combo&&comboSub){const live=now-(Number(state.comboLastAt)||0)<=12000&&Number(state.comboStreak)>0;const mult=1+Math.min(10,Math.max(0,(Number(state.comboStreak)||0)-1))*.05;combo.textContent=`×${(live?mult:1).toFixed(2)}`;comboSub.textContent=live?`${state.comboStreak} merges · ${Math.max(0,12-Math.floor((now-state.comboLastAt)/1000))}s to keep going`:"Merge again to build a streak";}
+  const rushStatus=$("rainbowRushStatus"),rushButton=$("startRainbowRush");if(rushStatus&&rushButton){const active=now<(Number(state.rainbowRushUntil)||0),cooling=now<(Number(state.rainbowRushCooldownUntil)||0);rushStatus.textContent=active?`ACTIVE · ${Math.ceil((state.rainbowRushUntil-now)/1000)}s left`:cooling?`READY IN ${Math.ceil((state.rainbowRushCooldownUntil-now)/1000)}s`:"READY TO START";rushButton.disabled=active||cooling;rushButton.textContent=active?"🌈 RAINBOW RUSH ACTIVE":cooling?"⏳ RUSH RECHARGING":"🌈 Start 90-second Rainbow Rush";}
+  const powerContent=$("powerupsContent");if(powerContent){const nodes=powerContent.querySelectorAll("[data-powerup]");const lucky=powerContent.querySelector('[data-powerup="lucky-ladle"]');if(lucky&&now<(Number(state.luckyLadleUntil)||0)){lucky.disabled=true;lucky.textContent="Luck boost active";const desc=lucky.closest(".feature-row")?.querySelector("p");if(desc)desc.textContent=`5× mutation luck is active for ${Math.ceil((state.luckyLadleUntil-now)/1000)}s.`;}}
+}
+function tickGameSystems(){
+  const now=Date.now();let earnedDrop=false;
+  let guard=0;
+  while(now>=(Number(state.specialDropNextAt)||now+60000)&&guard<10){
+    state.specialDropQueued=Math.min(10,(Number(state.specialDropQueued)||0)+1);
+    state.specialDropNextAt=(Number(state.specialDropNextAt)||now)+60000;guard++;earnedDrop=true;
+  }
+  if(state.specialDropQueued>0&&state.items.length<40){state.specialDropQueued--;spawnMinuteMysteryFood();}
+  autoMergeTick(now);updateTimedUI();
+  if(earnedDrop)scheduleSave();
+}
+
+function renderAll(){renderBoard();renderStats();renderShop();renderUpgrades();renderMissions();renderNewTabs();updateTimedUI()}
+
+function pickItem(id){
+  const item=itemById(id);if(!item)return;
+  if(state.selectedId===id){state.selectedId=null;state.selectedPair=[];renderBoard();return}
+  const prior=itemById(state.selectedId);
+  if(prior && prior.id!==id && prior.tier===item.tier){
+    mergeItems(prior.id,item.id);
+    return;
+  }
+  state.selectedId=id;state.selectedPair=[id];renderBoard();
+}
+function selectTap(id){
+  if(drag&&drag.moved)return;
+  const now=performance.now();
+  const item=itemById(id);if(!item)return;
+  // Two consecutive taps on the same item select/deselect normally. A tap on a second matching tier merges.
+  pickItem(id);lastTap=now;
+}
+function pointerDownItem(e,id){
+  if(e.button!==undefined&&e.button!==0)return;
+  e.preventDefault();
+  const item=itemById(id);if(!item)return;
+  const rect=board.getBoundingClientRect();
+  drag={id,startX:e.clientX,startY:e.clientY,offsetX:e.clientX-(rect.left+item.x*rect.width),offsetY:e.clientY-(rect.top+item.y*rect.height),moved:false};
+}
+function pointerMove(e){
+  if(!drag)return;
+  const dx=e.clientX-drag.startX,dy=e.clientY-drag.startY;
+  if(!drag.moved&&Math.hypot(dx,dy)>5)drag.moved=true;
+  if(!drag.moved)return;
+  const item=itemById(drag.id);if(!item)return;
+  const rect=board.getBoundingClientRect();
+  item.x=clamp((e.clientX-rect.left-drag.offsetX)/rect.width,.055,.945);
+  item.y=clamp((e.clientY-rect.top-drag.offsetY)/rect.height,.09,.91);
+  const el=foodLayer.querySelector(`[data-id="${drag.id}"]`);
+  if(el){el.style.left=item.x*100+"%";el.style.top=item.y*100+"%";}
+}
+function nearestMergeTarget(item){
+  const p=boardPoint(item),rad=Math.min(board.clientWidth*.14,100);
+  let best=null,bestD=Infinity;
+  for(const other of state.items){
+    if(other.id===item.id||other.tier!==item.tier)continue;
+    const q=boardPoint(other),d=Math.hypot(p.x-q.x,p.y-q.y);
+    if(d<rad&&d<bestD){best=other;bestD=d;}
+  }
+  return best;
+}
+function pointerUp(e){
+  if(!drag)return;
+  const d=drag;drag=null;
+  if(d.moved){
+    const moving=itemById(d.id);
+    if(moving){
+      const target=nearestMergeTarget(moving);
+      if(target){mergeItems(moving.id,target.id);return}
+    }
+    state.selectedId=d.id;renderBoard();scheduleSave();
+  }else{
+    selectTap(d.id);
+  }
+}
+window.addEventListener("pointermove",pointerMove);
+window.addEventListener("pointerup",pointerUp);
+window.addEventListener("pointercancel",()=>{drag=null});
+
+function mergeItems(idA,idB){
+  const a=itemById(idA),b=itemById(idB);
+  if(!a||!b||a.id===b.id||a.tier!==b.tier){toast("Those foods don't match yet!","bad");return false}
+  const rect=board.getBoundingClientRect();
+  const p=boardPoint(a),q=boardPoint(b),cx=(p.x+q.x)/2,cy=(p.y+q.y)/2;
+  const originTier=a.tier,baseTier=Math.min(foods.length-1,originTier+1);
+  const resultTier=rollTier(originTier);
+  const mutation=getMutation();
+  const avgX=(a.x+b.x)/2,avgY=(a.y+b.y)/2;
+  state.items=state.items.filter(i=>i.id!==idA&&i.id!==idB);
+  const result={id:randomId(),tier:resultTier,mutation,x:clamp(avgX,.07,.93),y:clamp(avgY,.1,.9)};
+  state.items.push(result);
+  recentlyMergedId=result.id;setTimeout(()=>{if(recentlyMergedId===result.id)recentlyMergedId=null;},750);
+  state.selectedId=result.id;state.selectedPair=[];
+  state.merges++;state.lifetimeMerges++;state.itemsMade++;
+  if(resultTier>state.bestTier){state.bestTier=resultTier;state.bestMutation=mutation;}
+  else if(resultTier===state.bestTier&&mutationMap[mutation].mult>mutationMap[state.bestMutation||"normal"].mult)state.bestMutation=mutation;
+  discover(resultTier,mutation);
+  const mut=mutationMap[mutation];
+  const now=Date.now();
+  state.comboStreak=(now-(Number(state.comboLastAt)||0)<=12000)?Math.min(10000,(Number(state.comboStreak)||0)+1):1;
+  state.comboLastAt=now;state.comboBest=Math.max(Number(state.comboBest)||0,state.comboStreak);
+  const comboMult=1+Math.min(10,Math.max(0,state.comboStreak-1))*.05;
+  const rushMult=now<(Number(state.rainbowRushUntil)||0)?2:1;
+  const earnMult=(1+state.upgrades.earnings*.25)*(1+(state.rebirths||0)*.2)*comboMult*rushMult;
+  const reward=Math.round((8*Math.pow(originTier+1,1.45)+3)*earnMult*mut.mult);
+  awardCoins(reward,cx,cy);
+  if(state.comboStreak>=3)toast(`🔥 ${state.comboStreak}× MERGE COMBO · +${Math.round((comboMult-1)*100)}% rewards!`,'gold');
+  burst(cx,cy,mut.color,mutation==="cosmic"?28:mutation==="rainbow"?23:16);
+  if(resultTier>=baseTier+1)toast(`TIER SKIP! ${foods[resultTier].emoji} ${foods[resultTier].name}!`,"gold");
+  else toast(`${foods[originTier].emoji} + ${foods[originTier].emoji} → ${foods[resultTier].emoji} ${mut.name!=="Normal"?mut.name+" ":""}${foods[resultTier].name}`,"good");
+  if(mutation==="cosmic")toast("COSMIC HIT! That's ridiculously rare. 🌌","gold");
+  else if(mutation==="rainbow")toast("RAINBOW MUTATION! Huge roll! 🌈","gold");
+  renderAll();scheduleSave();
+  return true;
+}
+function quickMerge(){
+  let count=0,guard=0;
+  while(guard<80){
+    guard++;
+    const buckets=new Map();
+    for(const item of state.items){
+      if(!buckets.has(item.tier))buckets.set(item.tier,[]);
+      buckets.get(item.tier).push(item);
+    }
+    let pair=null;
+    for(const list of buckets.values()){if(list.length>=2){pair=[list[0],list[1]];break}}
+    if(!pair)break;
+    if(!mergeItems(pair[0].id,pair[1].id))break;
+    count++;
+  }
+  state.stats.quickMerges++;
+  if(count)toast(`Quick merged ${count} pairs! ⚡`,"gold");
+  else toast("No matching pairs on the board. Drag or drop more food!","bad");
+  scheduleSave();
+}
+function spawnFood(free=false,atX=null,atY=null,keepSelection=false){
+  if(state.items.length>=40){toast("Board full! Merge or sell some food first.","bad");return false}
+  const cost=free?0:spawnCost();
+  if(state.coins<cost){toast(`You need ${fmt(cost-state.coins)} more coins to drop food.`,"bad");return false}
+  if(!free)state.coins-=cost;
+  const occupied=state.items.map(i=>({x:i.x,y:i.y}));
+  let x=atX??(.12+Math.random()*.76),y=atY??(.14+Math.random()*.73),tries=0;
+  while(tries<15&&occupied.some(p=>Math.hypot((p.x-x)*board.clientWidth,(p.y-y)*board.clientHeight)<80)){
+    x=.1+Math.random()*.8;y=.12+Math.random()*.72;tries++;
+  }
+  const item={id:randomId(),tier:0,mutation:"normal",x:clamp(x,.07,.93),y:clamp(y,.1,.9)};
+  state.items.push(item);state.itemsMade++;if(!keepSelection)state.selectedId=item.id;
+  if(!state.discovered["0-normal"])discover(0,"normal");
+  renderAll();scheduleSave();
+  const bp=boardPoint(item);burst(bp.x,bp.y,"#ffad82",7);
+  if(!free)toast(`Fresh ${foods[0].name} dropped for ${cost} coins.`,"good");
+  return true;
+}
+function sellSelected(){
+  const item=itemById(state.selectedId);if(!item)return;
+  if(state.items.length<=1){toast("Keep at least one food on the board so you can keep playing.","bad");return}
+  const worth=itemValue(item);
+  const p=boardPoint(item);
+  state.items=state.items.filter(i=>i.id!==item.id);
+  state.selectedId=null;state.stats.sold++;
+  awardCoins(worth,p.x,p.y);burst(p.x,p.y,"#ffd166",8);
+  toast(`Sold ${foods[item.tier].name} for ${fmt(worth)} coins.`,"gold");
+  renderAll();scheduleSave();
+}
+function spreadItems(){
+  const n=state.items.length;if(!n){return}
+  const cols=Math.ceil(Math.sqrt(n*board.clientWidth/board.clientHeight));
+  const rows=Math.ceil(n/cols);
+  state.items.forEach((item,i)=>{
+    const col=i%cols,row=Math.floor(i/cols);
+    const jx=(Math.random()-.5)*.11,jy=(Math.random()-.5)*.1;
+    item.x=clamp((col+.5)/cols+jx,.09,.91);item.y=clamp((row+.5)/rows+jy,.12,.88);
+  });
+  renderBoard();scheduleSave();toast("Foods spread out across your kitchen.","good");
+}
+function startAutoDrop(){
+  if(autoInterval){clearInterval(autoInterval);autoInterval=null}
+  if(!state.upgrades.auto||!state.autoEnabled)return;
+  autoInterval=setInterval(()=>{if(state.upgrades.auto&&state.autoEnabled&&state.items.length<40)spawnFood(true,null,null,true)},18000);
+}
+function openModal(which){
+  currentModal=which;
+  const back=$("modalBackdrop"),title=$("modalTitle"),sub=$("modalSubtitle"),body=$("modalBody");
+  back.querySelector(".modal").classList.toggle("admin-modal",which==="admin");
+  if(which==="admin-code"){
+    title.textContent="Kitchen tools";sub.textContent="Enter the access phrase to open the developer controls.";
+    body.innerHTML=`<form id="accessForm" class="admin-shell"><div class="admin-card wide"><h4>🔐 Special access</h4><p>This panel is locked for this game session. Access does not carry over when the page is reopened.</p><div class="admin-field"><label for="accessPhrase">Access phrase</label><input class="admin-input" id="accessPhrase" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Enter access phrase" required></div><div class="admin-actions"><button class="btn primary" type="submit">Unlock controls</button><button class="btn secondary" type="button" id="cancelAccess">Cancel</button></div><div class="admin-note">The access check is local to this browser game. It is designed to hide tools from casual use, not to secure a public server.</div></div></form>`;
+    $("cancelAccess").addEventListener("click",closeModal);
+    $("accessForm").addEventListener("submit",e=>{
+      e.preventDefault();
+      const input=$("accessPhrase");
+      if(verifyKitchenText(input.value)){
+        adminUnlocked=true;activeAdminPage="economy";toast("Developer controls unlocked for this session.","good");openModal("admin");
+      }else{
+        input.value="";input.setAttribute("aria-invalid","true");input.placeholder="Incorrect phrase — try again";toast("That access phrase is not correct.","bad");input.focus();
+      }
+    });
+    setTimeout(()=>$("accessPhrase")?.focus(),0);
+  }else if(which==="admin"){
+    if(!adminUnlocked){openModal("admin-code");return}
+    title.textContent="Kitchen developer panel";sub.textContent="Local admin controls · changes autosave with this kitchen.";
+    renderAdminPanel(body);
+  }else if(which==="stats"){
+    title.textContent="Stats & kitchen settings";sub.textContent="Your long-term kitchen career, plus save controls.";
+    title.textContent="Food discovery index";sub.textContent=`${foods.length} foods × ${mutations.length} variants. Unknown entries stay mysterious until discovered.`;
+    const cards=[];
+    foods.forEach((f,tier)=>mutations.forEach(m=>{
+      const key=`${tier}-${m.id}`,found=!!state.discovered[key];
+      cards.push(`<div class="index-card ${found?"found":"locked"}"><span class="idx-emoji">${found?f.emoji:"❔"}</span><span class="idx-name">${found?`${m.name} ${f.name}`:"Undiscovered"}</span><span class="idx-sub">${found?`Tier ${tier+1} · ×${m.mult} value`:`Tier ${tier+1} · ???`}</span>${found?'<span class="found-check">✓</span>':""}</div>`);
+    }));
+    body.innerHTML=`<div class="progress-row"><span>Collected discoveries</span><strong>${Object.keys(state.discovered).filter(k=>state.discovered[k]).length} / ${totalIndex}</strong></div><div class="progress-track"><div class="progress-fill" style="width:${Object.keys(state.discovered).filter(k=>state.discovered[k]).length/totalIndex*100}%"></div></div><div class="index-tools"><input id="indexSearch" type="search" placeholder="Search foods or mutations…" aria-label="Search food index"><select id="indexFilter" aria-label="Filter food discoveries"><option value="all">All variants</option><option value="found">Discovered only</option><option value="missing">Undiscovered only</option></select></div><div class="index-grid" id="indexGrid" style="margin-top:12px">${cards.map((html,i)=>html.replace('class="index-card ',`data-search="${(foods[Math.floor(i/mutations.length)].name+" "+mutations[i%mutations.length].name).toLowerCase()}" data-found="${!!state.discovered[`${Math.floor(i/mutations.length)}-${mutations[i%mutations.length].id}`]}" class="index-card `)).join("")}</div>`;
+    const filterIndex=()=>{
+      const query=( $("indexSearch").value||"" ).trim().toLowerCase(),filter=$("indexFilter").value;
+      document.querySelectorAll("#indexGrid .index-card").forEach(card=>{
+        const found=card.dataset.found==="true",matchesText=card.dataset.search.includes(query),matchesFilter=filter==="all"||(filter==="found"&&found)||(filter==="missing"&&!found);
+        card.hidden=!(matchesText&&matchesFilter);
+      });
+    };
+    $("indexSearch").addEventListener("input",filterIndex);$("indexFilter").addEventListener("change",filterIndex);
+  }else if(which==="stats"){
+    title.textContent="Stats & kitchen settings";sub.textContent="Your long-term kitchen career, plus save controls.";
+    body.innerHTML=`
+      <div class="stats-grid" style="padding:0 0 16px">
+        <div class="stat"><div class="label">Lifetime merges</div><div class="value">${fmt(state.lifetimeMerges)}</div></div>
+        <div class="stat"><div class="label">Lifetime coins</div><div class="value">${fmt(state.lifetimeCoins)}</div></div>
+        <div class="stat"><div class="label">Mutation finds</div><div class="value">${fmt(state.stats.mutations)}</div></div>
+        <div class="stat"><div class="label">Tier skips</div><div class="value">${fmt(state.stats.skips)}</div></div>
+        <div class="stat"><div class="label">Items created</div><div class="value">${fmt(state.itemsMade)}</div></div>
+        <div class="stat"><div class="label">Items sold</div><div class="value">${fmt(state.stats.sold)}</div></div>
+      </div>
+      <div class="settings-row"><div><strong>Autosave</strong><p>Progress is stored in this browser's local storage.</p></div><span style="color:var(--mint);font-size:11px;font-weight:900">ON ✓</span></div>
+      <div class="settings-row"><div><strong>Auto-snacker</strong><p>${state.upgrades.auto?(state.autoEnabled?"Free basic food drops every 18 seconds.":"Auto-snacker is paused. Your upgrade is still owned."):"Unlock with the Auto-snacker upgrade."}</p></div><button class="btn secondary small" id="toggleAuto" ${state.upgrades.auto?"":"disabled"}>${state.upgrades.auto?(state.autoEnabled?"Turn off":"Turn on"):"Locked"}</button></div>
+      <div class="settings-row"><div><strong>Download backup</strong><p>Save a copy of your progress as a JSON file.</p></div><button class="btn secondary small" id="exportSave">Export save ↓</button></div>
+      <div class="settings-row"><div><strong>Import backup</strong><p>Load a previously exported Merge Munchies save.</p></div><button class="btn secondary small" id="importSave">Import save ↑</button></div>
+      <div class="settings-row"><div><strong class="danger">Reset kitchen</strong><p>Delete this save and start over. This cannot be undone.</p></div><button class="btn small" style="background:#ff709d1b;color:#ff9bb7;border:1px solid #ff709d40" id="resetSave">Reset</button></div>`;
+    $("toggleAuto")?.addEventListener("click",()=>{
+      if(!state.upgrades.auto)return;
+      state.autoEnabled=!state.autoEnabled;startAutoDrop();
+      toast(state.autoEnabled?"Auto-snacker turned on.":"Auto-snacker paused. Upgrade retained.","gold");
+      scheduleSave();openModal("stats");renderAll();
+    });
+    $("exportSave")?.addEventListener("click",exportSave);
+    $("importSave")?.addEventListener("click",()=>{const f=document.createElement("input");f.type="file";f.accept=".json,application/json";f.addEventListener("change",()=>importSaveFile(f.files?.[0]));f.click()});
+    $("resetSave")?.addEventListener("click",()=>{
+      if(!confirm("Reset Merge Munchies? Your saved kitchen, coins and discoveries will be deleted."))return;
+      localStorage.removeItem(SAVE_KEY);state=defaultState();saveNow();renderAll();startAutoDrop();closeModal();toast("Fresh kitchen! Time to merge.","good");
+    });
+  }
+  back.classList.add("open");
+}
+function closeModal(){ $("modalBackdrop").classList.remove("open");currentModal=null}
+function exportSave(){
+  try{
+    const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
+    const url=URL.createObjectURL(blob),a=document.createElement("a");
+    a.href=url;a.download="merge-munchies-save.json";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+    toast("Save backup downloaded.","good");
+  }catch(e){toast("Couldn't export the save in this browser.","bad")}
+}
+function importSaveFile(file){
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const parsed=JSON.parse(String(reader.result));
+      if(!parsed||typeof parsed!=="object"||!Array.isArray(parsed.items)||!parsed.upgrades)throw new Error("invalid");
+      if(!confirm("Import this save? It will replace your current kitchen."))return;
+      state=sanitiseSave(parsed);saveNow();renderAll();startAutoDrop();closeModal();toast("Save imported successfully!","good");
+    }catch(e){toast("That file doesn't look like a Merge Munchies save.","bad")}
+  };
+  reader.onerror=()=>toast("Couldn't read that file.","bad");
+  reader.readAsText(file);
+}
+function resetModalClick(e){if(e.target===$("modalBackdrop"))closeModal()}
+
+let adminUnlocked=false;
+let activeAdminPage="economy";
+const gateParts=[0xA5D77C21,0x5BE38645];
+function verifyKitchenText(value){
+  const text=String(value||"").trim();let hash=2166136261;
+  for(let i=0;i<text.length;i++)hash=Math.imul(hash^text.charCodeAt(i),16777619);
+  const digest=gateParts[0]^gateParts[1];
+  return (hash>>>0)===(digest>>>0);
+}
+function adminPagesMarkup(){
+  const tiers=foods.map((f,i)=>`<option value="${i}">T${i+1} · ${f.emoji} ${f.name}</option>`).join("");
+  const muts=mutations.map(m=>`<option value="${m.id}">${m.name}</option>`).join("");
+  return `<div class="admin-shell" id="adminShell">
+    <div class="admin-toolbar"><span class="admin-status">● SESSION UNLOCKED</span><div class="admin-search-wrap"><span>⌕</span><input class="admin-search" id="adminSearch" type="search" placeholder="Search admin tools…" autocomplete="off"></div><button class="btn secondary small" id="admLock">🔒 Lock</button></div>
+    <div class="admin-results" id="adminSearchResults" hidden></div>
+    <div class="admin-workspace" id="adminWorkspace">
+      <nav class="admin-tabs" aria-label="Admin sections">
+        <button class="admin-tab active" data-admin-page="economy" aria-pressed="true"><span class="adm-icon">🪙</span>Economy</button>
+        <button class="admin-tab" data-admin-page="food" aria-pressed="false"><span class="adm-icon">🍔</span>Food spawner</button>
+        <button class="admin-tab" data-admin-page="unlocks" aria-pressed="false"><span class="adm-icon">🔓</span>Unlocks</button>
+        <button class="admin-tab" data-admin-page="odds" aria-pressed="false"><span class="adm-icon">🎲</span>Luck & odds</button>
+        <button class="admin-tab" data-admin-page="effects" aria-pressed="false"><span class="adm-icon">✨</span>Effects</button>
+        <button class="admin-tab" data-admin-page="abuse" aria-pressed="false"><span class="adm-icon">😈</span>Admin abuse</button>
+        <button class="admin-tab" data-admin-page="saves" aria-pressed="false"><span class="adm-icon">💾</span>Save tools</button>
+      </nav>
+      <div class="admin-pages">
+        <section class="admin-page active" data-admin-content="economy">
+          <div class="admin-card" id="adm-coins" data-admin-search="coins balance currency money add remove set wallet"><h4>🪙 Coin controller</h4><p>Change your spendable coin balance. Amounts are capped to avoid invalid saves.</p><div class="admin-field"><label for="admCoinAmount">Amount</label><input class="admin-input" type="number" id="admCoinAmount" min="0" max="1000000000000000" step="1" value="1000"></div><div class="admin-actions"><button class="btn mint" data-admin-action="coin-add">＋ Add</button><button class="btn secondary" data-admin-action="coin-remove">− Remove</button><button class="btn gold" data-admin-action="coin-set">Set balance</button></div><div class="admin-note">Current balance: <b id="admCurrentCoins">${fmt(state.coins)}</b> coins</div></div>
+          <div class="admin-card" id="adm-free-upgrades" data-admin-search="free upgrades max upgrades unlock all upgrade levels helpers research auto snacker"><h4>⬆️ Free upgrades</h4><p>Max out regular upgrades, mutation research, and kitchen helpers without spending coins.</p><div class="admin-actions"><button class="btn primary" data-admin-action="free-upgrades">Unlock all upgrades</button></div><div class="admin-note">Includes Luck, Earnings, Tier Hopper, Auto-snacker, Research and Helpers.</div></div>
+          <div class="admin-card wide" id="adm-auto" data-admin-search="auto snack auto-snacker passive food toggle enable disable helper"><h4>🤖 Auto-snacker</h4><p>Enable or pause free basic-food drops. If you have not purchased it, admin control unlocks it for free.</p><div class="admin-actions"><button class="btn secondary" data-admin-action="toggle-auto">${state.autoEnabled&&state.upgrades.auto?"Pause Auto-snacker":"Enable Auto-snacker"}</button></div></div>
+        </section>
+        <section class="admin-page" data-admin-content="food">
+          <div class="admin-card wide" id="adm-spawn" data-admin-search="spawn food tier mutation create generate item snack dish rare legendary"><h4>🍔 Spawn any food</h4><p>Choose a tier and mutation, then add that food directly to the board. Board capacity remains 40 items.</p><div class="admin-row"><div class="admin-field"><label for="admFoodTier">Food tier</label><select class="admin-select" id="admFoodTier">${tiers}</select></div><div class="admin-field"><label for="admFoodMutation">Mutation</label><select class="admin-select" id="admFoodMutation">${muts}</select></div></div><div class="admin-row"><div class="admin-field"><label for="admSpawnX">Board X position (%)</label><input class="admin-input" id="admSpawnX" type="number" min="7" max="93" value="50"></div><div class="admin-field"><label for="admSpawnY">Board Y position (%)</label><input class="admin-input" id="admSpawnY" type="number" min="10" max="90" value="50"></div></div><div class="admin-actions"><button class="btn primary" data-admin-action="spawn-food">✨ Spawn selected food</button><button class="btn secondary" data-admin-action="spawn-random">🎲 Spawn random rare food</button></div><div class="admin-note">Position is approximate and intentionally allows overlap if you choose a busy spot.</div></div>
+          <div class="admin-card wide" id="adm-teleport" data-admin-search="teleport move selected food board x y position reposition"><h4>🧲 Teleport selected food</h4><p>Select a food on the board first. Set a new location using the X/Y percentages above, then teleport it here.</p><div class="admin-actions"><button class="btn gold" data-admin-action="teleport-food">Teleport selected food</button><button class="btn secondary" data-admin-action="teleport-center">Move selected to center</button></div></div>
+        </section>
+        <section class="admin-page" data-admin-content="unlocks">
+          <div class="admin-card" id="adm-index-unlock" data-admin-search="unlock all foods collection index discoveries mutations complete encyclopedia"><h4>📚 Complete food index</h4><p>Mark every tier and mutation as discovered without placing hundreds of foods on the board.</p><div class="admin-actions"><button class="btn primary" data-admin-action="unlock-index">Unlock all discoveries</button></div></div>
+          <div class="admin-card" id="adm-clear-discoveries" data-admin-search="reset clear discoveries index collection locked foods"><h4>🧹 Reset discoveries</h4><p>Clear the discovery index while keeping your current foods. This cannot be undone except by importing a backup.</p><div class="admin-actions"><button class="btn secondary" data-admin-action="clear-index">Reset food index</button></div></div>
+        </section>
+        <section class="admin-page" data-admin-content="odds">
+          <div class="admin-card wide" id="adm-luck" data-admin-search="luck multiplier random rng probability odds mutations chance settings"><h4>🎲 RNG luck multiplier</h4><p>Multiplies mutation chances from upgrades, research, rebirth and the base chances below. Values are saved automatically.</p><div class="admin-field"><label for="admLuckMultiplier">Luck multiplier (0.1× to 100×)</label><input class="admin-input" id="admLuckMultiplier" type="number" min="0.1" max="100" step="0.1" value="${Number(state.adminSettings?.luckMultiplier||1)}"></div><div class="admin-actions"><button class="btn primary" data-admin-action="save-luck">Apply luck multiplier</button><button class="btn secondary" data-admin-action="reset-odds">Reset default odds</button></div></div>
+          <div class="admin-card wide" id="adm-mutations" data-admin-search="mutation chances shiny golden rainbow cosmic percentage percent probability roll normal tuning"><h4>🧬 Base mutation chances</h4><p>Enter percentages for each mutation before luck multipliers. If the combined effective odds exceed 100%, they are scaled proportionally to keep the RNG valid.</p><div class="admin-row"><div class="admin-field"><label for="admChanceShiny">Shiny (%)</label><input class="admin-input" id="admChanceShiny" type="number" min="0" max="100" step="0.1" value="${state.adminSettings?.mutationChances?.shiny??12}"></div><div class="admin-field"><label for="admChanceGolden">Golden (%)</label><input class="admin-input" id="admChanceGolden" type="number" min="0" max="100" step="0.1" value="${state.adminSettings?.mutationChances?.golden??3.5}"></div><div class="admin-field"><label for="admChanceRainbow">Rainbow (%)</label><input class="admin-input" id="admChanceRainbow" type="number" min="0" max="100" step="0.1" value="${state.adminSettings?.mutationChances?.rainbow??.9}"></div><div class="admin-field"><label for="admChanceCosmic">Cosmic (%)</label><input class="admin-input" id="admChanceCosmic" type="number" min="0" max="100" step="0.01" value="${state.adminSettings?.mutationChances?.cosmic??.12}"></div></div><div class="admin-actions"><button class="btn gold" data-admin-action="save-mutation-chances">Apply mutation chances</button></div></div>
+        </section>
+        <section class="admin-page" data-admin-content="effects">
+          <div class="admin-card wide" id="adm-effects" data-admin-search="visual effects animation celebration fireworks sparkles particles cosmic rainbow gold green red flash"><h4>✨ Trigger special effects</h4><p>Play cosmetic celebrations and particle bursts. These effects do not alter food merging.</p><div class="admin-actions"><button class="btn gold" data-admin-action="effect-gold">🌟 Golden burst</button><button class="btn secondary" data-admin-action="effect-rainbow">🌈 Rainbow show</button><button class="btn secondary" data-admin-action="effect-cosmic">🌌 Cosmic storm</button><button class="btn mint" data-admin-action="effect-green">🍀 Lucky sparkles</button><button class="btn secondary" data-admin-action="effect-particles">💫 Board particles</button></div></div>
+          <div class="admin-card" id="adm-preview" data-admin-search="preview visual test cosmetics celebration"><h4>🎆 Preview</h4><p>Test the whole-screen celebration effect.</p><div class="admin-actions"><button class="btn primary" data-admin-action="effect-preview">Preview effects</button></div></div>
+        </section>
+        <section class="admin-page" data-admin-content="abuse">
+          <div class="admin-card" id="adm-coin-flood" data-admin-search="admin abuse coin flood money shower million coins cheat chaos"><h4>🌧️ Coin Flood</h4><p>Instantly add 1,000,000 coins to this save.</p><div class="admin-actions"><button class="btn gold" data-admin-action="abuse-coins">RAIN 1M COINS</button></div></div>
+          <div class="admin-card" id="adm-food-rain" data-admin-search="admin abuse food rain spam spawn 10 random foods mutations board chaos"><h4>🍔 Food Rain</h4><p>Spawn up to 10 high-tier foods with guaranteed rare mutations. Board limit still applies.</p><div class="admin-actions"><button class="btn primary" data-admin-action="abuse-food-rain">RAIN 10 FOODS</button></div></div>
+          <div class="admin-card" id="adm-cosmic-board" data-admin-search="admin abuse cosmic takeover change all food cosmic mutations everywhere"><h4>🌌 Cosmic Takeover</h4><p>Give every food on the board a Cosmic mutation.</p><div class="admin-actions"><button class="btn secondary" data-admin-action="abuse-cosmic">COSMIC-IFY BOARD</button></div></div>
+          <div class="admin-card" id="adm-tier-surge" data-admin-search="admin abuse tier surge increase every food tier five five tiers level up"><h4>🚀 Tier Surge</h4><p>Raise every food by five tiers, capped at the newest tier.</p><div class="admin-actions"><button class="btn mint" data-admin-action="abuse-tier-surge">BOOST ALL +5 TIERS</button></div></div>
+          <div class="admin-card" id="adm-chaos" data-admin-search="admin abuse chaos shuffle remix random positions mutations scramble board"><h4>🌀 Chaos Shuffle</h4><p>Randomize each food's position and mutation while keeping all foods.</p><div class="admin-actions"><button class="btn secondary" data-admin-action="abuse-chaos">UNLEASH CHAOS</button></div></div>
+          <div class="admin-card" id="adm-god-mode" data-admin-search="admin abuse god mode max upgrades luck mutation percentages auto merger powerups"><h4>👑 God Mode</h4><p>Max every upgrade, enable the Auto-snacker and Auto-merger, and set mutation odds to maximum.</p><div class="admin-actions"><button class="btn gold" data-admin-action="abuse-god-mode">ENABLE GOD MODE</button></div></div>
+          <div class="admin-card wide" data-admin-search="admin abuse warnings local only no undo backup"><h4>⚠️ Big effects, real save changes</h4><p>These commands affect your current local save and autosave instantly. Export a backup in Save Tools before using destructive-looking chaos controls.</p></div>
+        </section>
+        <section class="admin-page" data-admin-content="saves">
+          <div class="admin-card" id="adm-export" data-admin-search="export backup download save json file backup progress"><h4>💾 Export save</h4><p>Download a JSON backup of your current kitchen, including admin RNG settings.</p><div class="admin-actions"><button class="btn mint" data-admin-action="export-save">Export save file</button></div></div>
+          <div class="admin-card" id="adm-reset" data-admin-search="reset wipe erase restart delete save new game kitchen progress destructive"><h4>⚠️ Reset all progress</h4><p>Reset coins, board, upgrades, discoveries and admin RNG settings. Export a backup first if you may want to restore it.</p><div class="admin-actions"><button class="btn secondary" data-admin-action="reset-save">Reset kitchen</button></div></div>
+          <div class="admin-card wide" id="adm-session" data-admin-search="lock session access code relock admin logout"><h4>🔒 Session access</h4><p>Lock the panel now. You can enter the code again while this game session is still open.</p><div class="admin-actions"><button class="btn secondary" data-admin-action="lock-panel">Lock admin panel</button></div><div class="admin-note">Reloading the game always resets the unlock state.</div></div>
+        </section>
+      </div>
+    </div>
+  </div>`;
+}
+function activateAdminPage(page){
+  activeAdminPage=page;
+  const shell=$("adminShell");if(!shell)return;
+  shell.querySelectorAll("[data-admin-page]").forEach(b=>{const active=b.dataset.adminPage===page;b.classList.toggle("active",active);b.setAttribute("aria-pressed",String(active));});
+  shell.querySelectorAll("[data-admin-content]").forEach(p=>p.classList.toggle("active",p.dataset.adminContent===page));
+}
+function refreshAdminPanel(){
+  if(!adminUnlocked||currentModal!=="admin")return;
+  const page=activeAdminPage;
+  openModal("admin");activateAdminPage(page);
+}
+function adminNumber(id,min,max){
+  const input=$(id);if(!input)return null;
+  const n=Number(input.value);
+  if(!Number.isFinite(n)||input.value.trim()===""||n<min||n>max){input.focus();toast(`Enter a number from ${min} to ${max}.`,"bad");return null;}
+  return n;
+}
+function renderAdminPanel(body){
+  body.innerHTML=adminPagesMarkup();
+  const shell=$("adminShell");
+  shell.querySelectorAll("[data-admin-page]").forEach(btn=>btn.addEventListener("click",()=>activateAdminPage(btn.dataset.adminPage)));
+  $("admLock").addEventListener("click",()=>{adminUnlocked=false;closeModal();toast("Admin panel locked.","good")});
+  $("adminSearch").addEventListener("input",()=>{
+    const query=$("adminSearch").value.trim().toLowerCase(),results=$("adminSearchResults"),workspace=$("adminWorkspace"),shell=$("adminShell");
+    shell.classList.toggle("admin-searching",!!query);
+    if(!query){results.hidden=true;results.innerHTML="";workspace.hidden=false;return}
+    workspace.hidden=true;results.hidden=false;results.innerHTML="";
+    const hits=[...shell.querySelectorAll(".admin-card")].filter(card=>((card.dataset.adminSearch||"")+" "+card.textContent).toLowerCase().includes(query));
+    if(!hits.length){const empty=document.createElement("div");empty.className="admin-empty";empty.textContent="No tools match that search.";results.appendChild(empty);return}
+    for(const card of hits){
+      const btn=document.createElement("button");btn.type="button";btn.className="admin-result";
+      const title=card.querySelector("h4")?.textContent||"Admin tool";
+      const page=card.closest("[data-admin-content]")?.dataset.adminContent||"economy";
+      const detail=page.replace(/-/g," ");
+      const strong=document.createElement("strong");strong.textContent=title;
+      const span=document.createElement("span");span.textContent="Section: "+detail;
+      btn.append(strong,span);
+      btn.addEventListener("click",()=>{
+        $("adminSearch").value="";shell.classList.remove("admin-searching");results.hidden=true;workspace.hidden=false;activateAdminPage(page);
+        card.scrollIntoView({behavior:"smooth",block:"nearest"});card.classList.remove("admin-card-pulse");void card.offsetWidth;card.classList.add("admin-card-pulse");
+      });
+      results.appendChild(btn);
+    }
+  });
+  shell.addEventListener("click",e=>{
+    const btn=e.target.closest("[data-admin-action]");if(!btn)return;
+    const action=btn.dataset.adminAction;
+    if(action==="coin-add"||action==="coin-remove"||action==="coin-set"){
+      const amount=adminNumber("admCoinAmount",0,1e15);if(amount===null)return;
+      const n=Math.floor(amount);
+      if(action==="coin-add")state.coins=clamp(state.coins+n,0,1e15);
+      else if(action==="coin-remove")state.coins=Math.max(0,state.coins-n);
+      else state.coins=n;
+      finishAdminAction(action==="coin-add"?`Added ${fmt(n)} coins.`:action==="coin-remove"?`Removed up to ${fmt(n)} coins.`:`Coin balance set to ${fmt(n)}.`,"gold");return;
+    }
+    if(action==="free-upgrades"){
+      state.upgrades.luck=20;state.upgrades.earnings=20;state.upgrades.skip=20;state.upgrades.auto=1;state.autoEnabled=true;state.researchLevel=10;state.helperLevel=5;startAutoDrop();startHelperIncome();
+      finishAdminAction("All upgrades, research, and helpers unlocked for free.","gold",true);return;
+    }
+    if(action==="toggle-auto"){
+      if(!state.upgrades.auto){state.upgrades.auto=1;state.autoEnabled=true;}else state.autoEnabled=!state.autoEnabled;
+      startAutoDrop();finishAdminAction(state.autoEnabled?"Auto-snacker enabled.":"Auto-snacker paused; upgrade retained.","good");return;
+    }
+    if(action==="spawn-food"||action==="spawn-random"){
+      if(state.items.length>=40){toast("Board full! Merge or sell some food first.","bad");return}
+      const x=adminNumber("admSpawnX",0,100);if(x===null)return;
+      const y=adminNumber("admSpawnY",0,100);if(y===null)return;
+      const tier=action==="spawn-random"?Math.min(foods.length-1,Math.max(1,state.bestTier+Math.floor(Math.random()*5))):clamp(Math.floor(Number($("admFoodTier").value)||0),0,foods.length-1);
+      const mut=action==="spawn-random"?rollBetterMutation():$("admFoodMutation").value;
+      const item=addRolledFood(tier,mut);if(!item){toast("Could not spawn food; the board may be full.","bad");return}
+      item.x=clamp(x/100,.07,.93);item.y=clamp(y/100,.1,.9);
+      state.itemsMade++;discover(tier,mut);state.stats.adminSpawns=(Number(state.stats.adminSpawns)||0)+1;
+      const pos=boardPoint(item);burst(pos.x,pos.y,mutationMap[mut].color,mut==="cosmic"?45:mut==="rainbow"?32:18);
+      if(mut!=="normal")celebrate(mut,mut==="cosmic"?65:mut==="rainbow"?48:28);
+      finishAdminAction(`Spawned ${mutationMap[mut].name} ${foods[tier].name} on the board.`,mut==="normal"?"good":"gold");return;
+    }
+    if(action==="teleport-food"||action==="teleport-center"){
+      const item=itemById(state.selectedId);if(!item){toast("Select a food on the board first.","bad");return}
+      let x=50,y=50;
+      if(action==="teleport-food"){
+        x=adminNumber("admSpawnX",0,100);if(x===null)return;
+        y=adminNumber("admSpawnY",0,100);if(y===null)return;
+      }
+      item.x=clamp(x/100,.07,.93);item.y=clamp(y/100,.1,.9);const pos=boardPoint(item);burst(pos.x,pos.y,"#be8aff",18);
+      finishAdminAction(`Teleported ${foods[item.tier].name}.`,"good");return;
+    }
+    if(action==="unlock-index"){
+      for(let t=0;t<foods.length;t++)for(const m of mutations)state.discovered[`${t}-${m.id}`]=true;
+      finishAdminAction(`Unlocked all ${totalIndex} food and mutation discoveries.`,"gold",true);return;
+    }
+    if(action==="clear-index"){
+      if(!confirm("Reset every discovered food and mutation? This cannot be undone without a backup."))return;
+      state.discovered={"0-normal":true};state.stats.mutations=0;
+      finishAdminAction("Food discovery index reset.","good");return;
+    }
+    if(action==="save-luck"){
+      const mult=adminNumber("admLuckMultiplier",.1,100);if(mult===null)return;
+      state.adminSettings.luckMultiplier=Math.round(mult*10)/10;
+      finishAdminAction(`Luck multiplier set to ${state.adminSettings.luckMultiplier}×.`,"gold");return;
+    }
+    if(action==="save-mutation-chances"){
+      const values={shiny:adminNumber("admChanceShiny",0,100),golden:adminNumber("admChanceGolden",0,100),rainbow:adminNumber("admChanceRainbow",0,100),cosmic:adminNumber("admChanceCosmic",0,100)};
+      if(Object.values(values).some(v=>v===null))return;
+      for(const key of Object.keys(values))state.adminSettings.mutationChances[key]=Math.round(values[key]*100)/100;
+      finishAdminAction("Base mutation chances saved.","gold");return;
+    }
+    if(action==="reset-odds"){
+      state.adminSettings={luckMultiplier:1,mutationChances:{shiny:12,golden:3.5,rainbow:.9,cosmic:.12}};
+      finishAdminAction("RNG odds restored to defaults.","good");return;
+    }
+    if(action.startsWith("effect-")){
+      const k=action.slice(7);
+      if(k==="gold")celebrate("gold",58);
+      else if(k==="rainbow")celebrate("rainbow",65);
+      else if(k==="cosmic")celebrate("cosmic",70);
+      else if(k==="green")celebrate("green",48);
+      else if(k==="particles"){const rect=board.getBoundingClientRect();for(let i=0;i<5;i++)burst(Math.random()*rect.width,Math.random()*rect.height,["#be8aff","#68f0c2","#ffd166","#ff709d"][i%4],18);}
+      else if(k==="preview")celebrate("wheel",60);
+      toast("Special effect triggered!","gold");return;
+    }
+    if(action==="abuse-coins"){
+      awardCoins(1000000);state.stats.adminCoinFloods=(Number(state.stats.adminCoinFloods)||0)+1;finishAdminAction("Coin Flood! Added 1,000,000 coins.","gold",true);return;
+    }
+    if(action==="abuse-food-rain"){
+      const room=Math.max(0,40-state.items.length),count=Math.min(10,room);if(!count){toast("Board full. Merge or sell foods before using Food Rain.","bad");return}
+      const created=[];for(let i=0;i<count;i++){const tier=Math.min(foods.length-1,Math.max(2,(state.bestTier||0)+Math.floor(Math.random()*4)+1));const mut=rollBetterMutation();const item=addRolledFood(tier,mut);if(!item)break;state.itemsMade++;discover(tier,mut,false);created.push(item)}
+      state.stats.adminSpawns=(Number(state.stats.adminSpawns)||0)+created.length;finishAdminAction(`Food Rain spawned ${created.length} rare foods!`,"gold",true);return;
+    }
+    if(action==="abuse-cosmic"){
+      for(const item of state.items){item.mutation="cosmic";discover(item.tier,"cosmic",false);}
+      finishAdminAction(`Cosmic Takeover! ${state.items.length} foods now have Cosmic mutation.`,"gold",true);return;
+    }
+    if(action==="abuse-tier-surge"){
+      for(const item of state.items){item.tier=Math.min(foods.length-1,item.tier+5);discover(item.tier,item.mutation,false);if(item.tier>state.bestTier){state.bestTier=item.tier;state.bestMutation=item.mutation;}}
+      finishAdminAction("Tier Surge! Every food gained five tiers where possible.","gold",true);return;
+    }
+    if(action==="abuse-chaos"){
+      const randomMuts=["normal","shiny","golden","rainbow","cosmic"];
+      const shuffled=[...state.items].sort(()=>Math.random()-.5);
+      const ratio=board.clientHeight>0?board.clientWidth/board.clientHeight:1.4;
+      const cols=Math.max(1,Math.ceil(Math.sqrt(Math.max(1,shuffled.length)*ratio))),rows=Math.ceil(shuffled.length/cols);
+      shuffled.forEach((item,index)=>{
+        const col=index%cols,row=Math.floor(index/cols),jx=(Math.random()-.5)*.025,jy=(Math.random()-.5)*.025;
+        item.x=clamp((col+.5)/cols+jx,.07,.93);item.y=clamp((row+.5)/rows+jy,.1,.9);
+        item.mutation=randomMuts[Math.floor(Math.random()*randomMuts.length)];discover(item.tier,item.mutation,false);
+        if(item.tier>state.bestTier){state.bestTier=item.tier;state.bestMutation=item.mutation;}
+      });
+      finishAdminAction("Chaos Shuffle complete: foods rearranged, mutations remixed, and board kept playable!","gold",true);return;
+    }
+    if(action==="abuse-god-mode"){
+      state.upgrades.luck=20;state.upgrades.earnings=20;state.upgrades.skip=20;state.upgrades.auto=1;state.autoEnabled=true;state.researchLevel=10;state.helperLevel=5;state.autoMergeUnlocked=true;state.autoMergeEnabled=true;state.autoMergeLastAt=Date.now();state.adminSettings.luckMultiplier=100;state.adminSettings.mutationChances={shiny:100,golden:100,rainbow:100,cosmic:100};startAutoDrop();startHelperIncome();finishAdminAction("GOD MODE enabled. Maximum upgrades, 100× RNG luck, and automation are active.","gold",true);return;
+    }
+    if(action==="export-save"){exportSave();return}
+    if(action==="reset-save"){
+      if(!confirm("Reset ALL Merge Munchies progress, including coins, foods, discoveries, upgrades and admin RNG settings? Export a backup first if needed."))return;
+      if(!confirm("Final confirmation: permanently replace your current kitchen with a fresh save?"))return;
+      state=defaultState();saveNow();renderAll();startAutoDrop();startHelperIncome();
+      finishAdminAction("A fresh kitchen has been created.","good");return;
+    }
+    if(action==="lock-panel"){$("admLock").click();return}
+  });
+  activateAdminPage(activeAdminPage);
+  $("admCurrentCoins").textContent=fmt(state.coins);
+}
+function finishAdminAction(message,type="good",withCelebration=false){
+  renderAll();startAutoDrop();scheduleSave();toast(message,type);if(withCelebration)celebrate(type==="gold"?"gold":"purple",42);refreshAdminPanel();
+}
+
+function updateDropButton(){
+  const btn=$("dropFoodBtn");
+  if(btn)btn.textContent=`＋ Drop food · ${fmt(spawnCost())} 🪙`;
+}
+
+$("quickMergeBtn").addEventListener("click",quickMerge);
+$("sortBtn").addEventListener("click",spreadItems);
+$("sellSelectedBtn").addEventListener("click",sellSelected);
+$("clearSelectBtn").addEventListener("click",()=>{state.selectedId=null;state.selectedPair=[];renderBoard()});
+$("mergeSelectedBtn").addEventListener("click",()=>{
+  const item=itemById(state.selectedId);if(!item)return;
+  const matches=state.items.filter(i=>i.id!==item.id&&i.tier===item.tier).sort((a,b)=>Math.hypot(a.x-item.x,a.y-item.y)-Math.hypot(b.x-item.x,b.y-item.y));
+  if(matches.length)mergeItems(item.id,matches[0].id);else toast("No matching food to merge with.","bad");
+});
+$("openIndex").addEventListener("click",()=>openModal("index"));
+$("openStats").addEventListener("click",()=>openModal("stats"));
+$("closeModal").addEventListener("click",closeModal);
+$("modalBackdrop").addEventListener("click",resetModalClick);
+window.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal();if((e.key==="m"||e.key==="M")&&!e.ctrlKey&&!e.metaKey&&currentModal===null)quickMerge()});
+
+function addDropButton(){
+  // Kept in the board header after initialization, so the displayed price always reflects progression.
+  const actions=document.querySelector(".board-actions");
+  const btn=document.createElement("button");btn.className="btn primary";btn.id="dropFoodBtn";
+  btn.addEventListener("click",()=>spawnFood(false));
+  actions.insertBefore(btn,actions.firstChild);
+  updateDropButton();
+}
+function decorateSelectionPrice(){
+  const cost=spawnCost();
+  const btn=$("dropFoodBtn");
+  if(btn){btn.innerHTML=`<span>＋ Drop food</span><span style="opacity:.88">🪙 ${fmt(cost)}</span>`;btn.disabled=state.coins<cost||state.items.length>=40;btn.title=state.items.length>=40?"Board full":`Drop a basic food for ${cost} coins`;}
+  $("quickMergeBtn").disabled=!state.items.some((a,i)=>state.items.some((b,j)=>j>i&&a.tier===b.tier));
+}
+const originalRenderAll=renderAll;
+renderAll=function(){originalRenderAll();decorateSelectionPrice()};
+
+// Promote each top navigation target into its own full-screen workspace.
+// Keeping the existing panel nodes preserves their IDs, listeners, and save integration.
+(function buildFullScreenWorkspace(){
+  const oldLayout=document.querySelector(".layout");
+  const game=oldLayout?.querySelector(".game-panel");
+  const sidebar=oldLayout?.querySelector(".sidebar");
+  if(!oldLayout||!game||!sidebar)return;
+  const stats=sidebar.querySelector(".stats-panel");
+  const featurePanels=[...sidebar.querySelectorAll(".tab-panel")];
+  const workspace=document.createElement("div");
+  workspace.className="workspace";
+  workspace.id="workspace";
+  workspace.dataset.view="kitchen";
+  oldLayout.parentNode.insertBefore(workspace,oldLayout);
+  game.id="kitchenPanel";
+  game.classList.add("tab-panel","active");
+  workspace.appendChild(game);
+  if(stats)workspace.appendChild(stats);
+  featurePanels.forEach(panel=>workspace.appendChild(panel));
+  oldLayout.remove();
+})();
+
+document.querySelectorAll(".side-tab").forEach(tab=>tab.addEventListener("click",()=>{
+  document.querySelectorAll(".side-tab").forEach(t=>{
+    const active=t===tab;
+    t.classList.toggle("active",active);
+    t.setAttribute("aria-pressed",String(active));
+  });
+  document.querySelectorAll(".tab-panel").forEach(panel=>panel.classList.toggle("active",panel.id===tab.dataset.panel));
+  const workspace=$("workspace");
+  if(workspace){workspace.dataset.view=tab.dataset.panel==="kitchenPanel"?"kitchen":tab.dataset.panel;workspace.classList.remove("workspace-transition");void workspace.offsetWidth;workspace.classList.add("workspace-transition");}
+  const activePanel=$(tab.dataset.panel);if(activePanel){activePanel.classList.remove("tab-enter-special");void activePanel.offsetWidth;activePanel.classList.add("tab-enter-special");}
+  if(tab.dataset.panel==="kitchenPanel")decorateSelectionPrice();
+}));
+$("pantryMark").addEventListener("click",()=>openModal(adminUnlocked?"admin":"admin-code"));
+load();
+addDropButton();
+renderAll();
+startAutoDrop();
+startHelperIncome();
+setInterval(()=>{if(dirty)saveNow();},5000);
+setInterval(()=>{decorateSelectionPrice();tickGameSystems()},1000);
+// Periodically persist even when the board is idle.
+scheduleSave();
+})();
+</script>
+</body>
+</html>
